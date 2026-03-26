@@ -1,0 +1,8 @@
+{
+  "name": "walker",
+  "label": "Walker",
+  "description": "Blog minimalista com CMS admin embutido, SEO e sistema de plugins.",
+  "version": "1.0.0",
+  "status": "Ativo",
+  "screenshot": "/themes/walker.png"
+}

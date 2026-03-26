@@ -59,7 +59,16 @@ export function getWalkerPaths(): Record<string, WalkerPaths> {
   );
 }
 
-export function getThemes(): string[] {
+export interface ThemeMeta {
+  name: string;
+  label: string;
+  description: string;
+  version: string;
+  status: string;
+  screenshot: string;
+}
+
+export function getThemeNames(): string[] {
   try {
     return readdirSync(resolve(ROOT, 'templates'), { withFileTypes: true })
       .filter(d => d.isDirectory())
@@ -67,4 +76,19 @@ export function getThemes(): string[] {
   } catch {
     return [];
   }
+}
+
+export function getTheme(name: string): ThemeMeta {
+  return JSON.parse(
+    readFileSync(resolve(ROOT, `templates/${name}/theme.json`), 'utf-8')
+  );
+}
+
+export function getAllThemes(): ThemeMeta[] {
+  return getThemeNames().map(getTheme);
+}
+
+/** @deprecated use getAllThemes() */
+export function getThemes(): string[] {
+  return getThemeNames();
 }

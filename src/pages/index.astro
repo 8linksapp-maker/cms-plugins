@@ -1,11 +1,11 @@
 ---
 import DashLayout from '../layouts/DashLayout.astro';
 import Icon from '../components/Icon.astro';
-import { getAllPlugins, getRegistry, getThemes } from '../lib/data';
+import { getAllPlugins, getRegistry, getAllThemes } from '../lib/data';
 
 const plugins = getAllPlugins();
 const registry = getRegistry();
-const themes = getThemes();
+const themes = getAllThemes();
 
 const totalFiles = plugins.reduce((acc, p) => acc + p.files.length + p.adminPages.length, 0);
 const withSlots = plugins.filter(p => {
@@ -33,7 +33,7 @@ const withSlots = plugins.filter(p => {
       <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
         <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Temas Integrados</p>
         <p class="text-3xl font-bold text-slate-900">{themes.length}</p>
-        <p class="text-sm text-slate-500 mt-1">{themes.join(', ') || '—'}</p>
+        <p class="text-sm text-slate-500 mt-1">{themes.map(t => t.label).join(', ') || '—'}</p>
       </div>
       <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
         <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Injeção Automática</p>
@@ -79,6 +79,44 @@ const withSlots = plugins.filter(p => {
           </a>
         );
       })}
+    </div>
+
+    <!-- Themes section -->
+    <div id="temas" class="mt-10 mb-2 flex items-center justify-between">
+      <h2 class="text-lg font-bold text-slate-800">Temas</h2>
+      <span class="text-xs font-semibold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-full">{themes.length} total</span>
+    </div>
+    <p class="text-sm text-slate-500 mb-6">Temas disponíveis no repositório. Clique para ver detalhes e mapeamento de plugins.</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {themes.map(t => (
+        <a
+          href={`/theme/${t.name}`}
+          class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col overflow-hidden group"
+        >
+          <div class="aspect-video w-full bg-slate-100 overflow-hidden">
+            <img
+              src={t.screenshot}
+              alt={`Screenshot do tema ${t.label}`}
+              class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
+              onerror="this.parentElement.classList.add('flex','items-center','justify-center'); this.remove(); this.parentElement.innerHTML='<span class=\'text-slate-400 text-sm\'>Sem screenshot</span>'"
+            />
+          </div>
+          <div class="p-5 flex flex-col gap-3 flex-1">
+            <div class="flex items-start justify-between">
+              <h3 class="font-bold text-slate-800">{t.label}</h3>
+              <div class="flex items-center gap-2 shrink-0">
+                <span class="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full font-mono">v{t.version}</span>
+                <Icon name="ChevronRight" class="w-4 h-4 text-slate-300 group-hover:text-slate-500 group-hover:translate-x-0.5 transition-all" />
+              </div>
+            </div>
+            <p class="text-sm text-slate-500 leading-relaxed flex-1">{t.description}</p>
+            <div class="pt-2 border-t border-slate-100">
+              <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">{t.status}</span>
+            </div>
+          </div>
+        </a>
+      ))}
     </div>
 
   </div>
