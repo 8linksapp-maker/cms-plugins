@@ -2,12 +2,8 @@
   "name": "updater",
   "version": "1.0.0",
   "description": "Painel de atualizações do template",
-  "files": [
-    { "src": "UpdatesPanel.tsx", "dest": "src/plugins/updater/UpdatesPanel.tsx" }
-  ],
-  "adminPages": [
-    { "src": "updates.astro", "dest": "src/pages/admin/updates.astro" }
-  ],
+  "files": ["UpdatesPanel.tsx"],
+  "adminPages": ["updates.astro"],
   "configDefaults": {},
   "hub": {
     "label": "Atualizações",
@@ -17,6 +13,5 @@
     "bg": "bg-sky-50",
     "href": "/admin/updates"
   },
-  "slots": [],
   "changelog": "Versão inicial"
 }

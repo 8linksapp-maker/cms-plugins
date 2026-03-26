@@ -2,13 +2,8 @@
   "name": "google-analytics",
   "version": "1.0.0",
   "description": "Google Analytics GA4",
-  "files": [
-    { "src": "GoogleAnalytics.astro", "dest": "src/plugins/google-analytics/GoogleAnalytics.astro" },
-    { "src": "SettingsGA.tsx",        "dest": "src/plugins/google-analytics/SettingsGA.tsx" }
-  ],
-  "adminPages": [
-    { "src": "analytics.astro", "dest": "src/pages/admin/analytics.astro" }
-  ],
+  "files": ["GoogleAnalytics.astro", "SettingsGA.tsx"],
+  "adminPages": ["analytics.astro"],
   "configDefaults": {
     "googleAnalytics": { "measurementId": "" }
   },
@@ -20,12 +15,5 @@
     "bg": "bg-orange-50",
     "href": "/admin/analytics"
   },
-  "slots": [
-    {
-      "slot": "head",
-      "import": "import GoogleAnalytics from '../google-analytics/GoogleAnalytics.astro';",
-      "component": "<GoogleAnalytics />"
-    }
-  ],
   "changelog": "Versão inicial"
 }

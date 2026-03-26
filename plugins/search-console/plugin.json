@@ -2,20 +2,10 @@
   "name": "search-console",
   "version": "1.0.0",
   "description": "Google Search Console",
-  "files": [
-    { "src": "SearchConsolePanel.tsx", "dest": "src/plugins/search-console/SearchConsolePanel.tsx" },
-    { "src": "SettingsGSC.tsx",        "dest": "src/plugins/search-console/SettingsGSC.tsx" },
-    { "src": "gsc-api.ts",             "dest": "src/plugins/search-console/gsc-api.ts" }
-  ],
-  "adminPages": [
-    { "src": "search-console.astro", "dest": "src/pages/admin/search-console.astro" }
-  ],
+  "files": ["SearchConsolePanel.tsx", "SettingsGSC.tsx", "gsc-api.ts"],
+  "adminPages": ["search-console.astro"],
   "configDefaults": {
-    "searchConsole": {
-      "verificationTag": "",
-      "siteUrl": "",
-      "serviceAccountJson": ""
-    }
+    "searchConsole": { "verificationTag": "", "siteUrl": "", "serviceAccountJson": "" }
   },
   "hub": {
     "label": "Search Console",
@@ -25,6 +15,5 @@
     "bg": "bg-cyan-50",
     "href": "/admin/search-console"
   },
-  "slots": [],
   "changelog": "Versão inicial"
 }

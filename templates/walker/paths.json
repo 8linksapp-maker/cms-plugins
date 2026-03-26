@@ -1,0 +1,194 @@
+{
+  "google-analytics": {
+    "files": [
+      { "src": "GoogleAnalytics.astro", "dest": "src/plugins/google-analytics/GoogleAnalytics.astro" },
+      { "src": "SettingsGA.tsx",        "dest": "src/plugins/google-analytics/SettingsGA.tsx" }
+    ],
+    "adminPages": [
+      { "src": "analytics.astro", "dest": "src/pages/admin/analytics.astro" }
+    ],
+    "slots": [
+      {
+        "slot": "head",
+        "import": "import GoogleAnalytics from '../google-analytics/GoogleAnalytics.astro';",
+        "component": "<GoogleAnalytics />"
+      }
+    ]
+  },
+  "meta-pixel": {
+    "files": [
+      { "src": "MetaPixel.astro",       "dest": "src/plugins/meta-pixel/MetaPixel.astro" },
+      { "src": "SettingsMetaPixel.tsx", "dest": "src/plugins/meta-pixel/SettingsMetaPixel.tsx" }
+    ],
+    "adminPages": [
+      { "src": "meta-pixel.astro", "dest": "src/pages/admin/meta-pixel.astro" }
+    ],
+    "slots": [
+      {
+        "slot": "head",
+        "import": "import MetaPixel from '../meta-pixel/MetaPixel.astro';",
+        "component": "<MetaPixel />"
+      }
+    ]
+  },
+  "adsense": {
+    "files": [
+      { "src": "AdSenseHead.astro",   "dest": "src/plugins/adsense/AdSenseHead.astro" },
+      { "src": "SettingsAdSense.tsx", "dest": "src/plugins/adsense/SettingsAdSense.tsx" }
+    ],
+    "adminPages": [
+      { "src": "adsense.astro", "dest": "src/pages/admin/adsense.astro" }
+    ],
+    "slots": [
+      {
+        "slot": "head",
+        "import": "import AdSenseHead from '../adsense/AdSenseHead.astro';",
+        "component": "<AdSenseHead />"
+      }
+    ]
+  },
+  "social-share": {
+    "files": [
+      { "src": "SocialShare.astro",       "dest": "src/plugins/social-share/SocialShare.astro" },
+      { "src": "SettingsSocialShare.tsx", "dest": "src/plugins/social-share/SettingsSocialShare.tsx" }
+    ],
+    "adminPages": [
+      { "src": "social-share.astro", "dest": "src/pages/admin/social-share.astro" }
+    ],
+    "slots": [
+      {
+        "slot": "post-bottom",
+        "import": "import SocialShare from '../social-share/SocialShare.astro';",
+        "component": "<SocialShare title={title} context=\"post-bottom\" />"
+      }
+    ]
+  },
+  "seo": {
+    "files": [
+      { "src": "SchemaMarkup.astro", "dest": "src/plugins/seo/SchemaMarkup.astro" },
+      { "src": "SEOScoreWidget.tsx", "dest": "src/plugins/seo/SEOScoreWidget.tsx" },
+      { "src": "SettingsSEO.tsx",    "dest": "src/plugins/seo/SettingsSEO.tsx" }
+    ],
+    "adminPages": [
+      { "src": "seo.astro", "dest": "src/pages/admin/seo.astro" }
+    ],
+    "slots": [
+      {
+        "slot": "post-schema",
+        "import": "import SchemaMarkup from '../seo/SchemaMarkup.astro';",
+        "component": "<SchemaMarkup title={title} description={description} url={url} image={heroImage} datePublished={pubDate} authorName={authorName} category={category} />"
+      }
+    ]
+  },
+  "related-posts": {
+    "files": [
+      { "src": "RelatedPosts.astro", "dest": "src/plugins/related-posts/RelatedPosts.astro" }
+    ],
+    "adminPages": [],
+    "slots": [
+      {
+        "slot": "post-after",
+        "import": "import RelatedPosts from '../related-posts/RelatedPosts.astro';",
+        "component": "<RelatedPosts currentSlug={slug} category={category} />"
+      }
+    ]
+  },
+  "email-list": {
+    "files": [
+      { "src": "EmailPopup.astro",        "dest": "src/plugins/email-list/EmailPopup.astro" },
+      { "src": "EmailInlineBanner.astro", "dest": "src/plugins/email-list/EmailInlineBanner.astro" },
+      { "src": "SettingsEmailList.tsx",   "dest": "src/plugins/email-list/SettingsEmailList.tsx" },
+      { "src": "LeadsPanel.tsx",          "dest": "src/plugins/email-list/LeadsPanel.tsx" },
+      { "src": "EmailSequenceEditor.tsx", "dest": "src/plugins/email-list/EmailSequenceEditor.tsx" },
+      { "src": "brevo-api.ts",            "dest": "src/plugins/email-list/brevo-api.ts" }
+    ],
+    "adminPages": [
+      { "src": "email-list.astro", "dest": "src/pages/admin/email-list.astro" }
+    ],
+    "slots": [
+      {
+        "slot": "body-end",
+        "import": "import EmailPopup from '../email-list/EmailPopup.astro';",
+        "component": "<EmailPopup />"
+      }
+    ]
+  },
+  "cookie-consent": {
+    "files": [
+      { "src": "CookieConsent.astro",       "dest": "src/plugins/cookie-consent/CookieConsent.astro" },
+      { "src": "SettingsCookieConsent.tsx", "dest": "src/plugins/cookie-consent/SettingsCookieConsent.tsx" }
+    ],
+    "adminPages": [
+      { "src": "cookie-consent.astro", "dest": "src/pages/admin/cookie-consent.astro" }
+    ],
+    "slots": [
+      {
+        "slot": "body-end",
+        "import": "import CookieConsent from '../cookie-consent/CookieConsent.astro';",
+        "component": "<CookieConsent />"
+      }
+    ]
+  },
+  "redirects": {
+    "files": [
+      { "src": "RedirectsManager.tsx", "dest": "src/plugins/redirects/RedirectsManager.tsx" }
+    ],
+    "adminPages": [
+      { "src": "redirects.astro", "dest": "src/pages/admin/redirects.astro" }
+    ],
+    "slots": []
+  },
+  "affiliates": {
+    "files": [
+      { "src": "AffiliateManager.tsx",    "dest": "src/plugins/affiliates/AffiliateManager.tsx" },
+      { "src": "AffiliateProducts.astro", "dest": "src/plugins/affiliates/AffiliateProducts.astro" }
+    ],
+    "adminPages": [
+      { "src": "affiliates.astro", "dest": "src/pages/admin/affiliates.astro" }
+    ],
+    "slots": []
+  },
+  "ai-generator": {
+    "files": [
+      { "src": "AIPostGenerator.tsx", "dest": "src/plugins/ai-generator/AIPostGenerator.tsx" },
+      { "src": "SettingsAI.tsx",      "dest": "src/plugins/ai-generator/SettingsAI.tsx" },
+      { "src": "ai-provider.ts",      "dest": "src/plugins/ai-generator/ai-provider.ts" },
+      { "src": "generate.ts",         "dest": "src/plugins/ai-generator/generate.ts" },
+      { "src": "pexels.ts",           "dest": "src/plugins/ai-generator/pexels.ts" }
+    ],
+    "adminPages": [
+      { "src": "ai.astro", "dest": "src/pages/admin/ai.astro" }
+    ],
+    "slots": []
+  },
+  "search-console": {
+    "files": [
+      { "src": "SearchConsolePanel.tsx", "dest": "src/plugins/search-console/SearchConsolePanel.tsx" },
+      { "src": "SettingsGSC.tsx",        "dest": "src/plugins/search-console/SettingsGSC.tsx" },
+      { "src": "gsc-api.ts",             "dest": "src/plugins/search-console/gsc-api.ts" }
+    ],
+    "adminPages": [
+      { "src": "search-console.astro", "dest": "src/pages/admin/search-console.astro" }
+    ],
+    "slots": []
+  },
+  "wp-importer": {
+    "files": [
+      { "src": "ImportPage.tsx",        "dest": "src/plugins/wp-importer/ImportPage.tsx" },
+      { "src": "wordpress-importer.ts", "dest": "src/plugins/wp-importer/wordpress-importer.ts" }
+    ],
+    "adminPages": [
+      { "src": "import-wp.astro", "dest": "src/pages/admin/import-wp.astro" }
+    ],
+    "slots": []
+  },
+  "updater": {
+    "files": [
+      { "src": "UpdatesPanel.tsx", "dest": "src/plugins/updater/UpdatesPanel.tsx" }
+    ],
+    "adminPages": [
+      { "src": "updates.astro", "dest": "src/pages/admin/updates.astro" }
+    ],
+    "slots": []
+  }
+}

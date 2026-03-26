@@ -2,13 +2,8 @@
   "name": "adsense",
   "version": "1.0.0",
   "description": "Google AdSense Auto-Ads",
-  "files": [
-    { "src": "AdSenseHead.astro",    "dest": "src/plugins/adsense/AdSenseHead.astro" },
-    { "src": "SettingsAdSense.tsx",  "dest": "src/plugins/adsense/SettingsAdSense.tsx" }
-  ],
-  "adminPages": [
-    { "src": "adsense.astro", "dest": "src/pages/admin/adsense.astro" }
-  ],
+  "files": ["AdSenseHead.astro", "SettingsAdSense.tsx"],
+  "adminPages": ["adsense.astro"],
   "configDefaults": {
     "adsense": { "publisherId": "" }
   },
@@ -20,12 +15,5 @@
     "bg": "bg-green-50",
     "href": "/admin/adsense"
   },
-  "slots": [
-    {
-      "slot": "head",
-      "import": "import AdSenseHead from '../adsense/AdSenseHead.astro';",
-      "component": "<AdSenseHead />"
-    }
-  ],
   "changelog": "Versão inicial"
 }

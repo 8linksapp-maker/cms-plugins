@@ -1,0 +1,85 @@
+---
+import DashLayout from '../layouts/DashLayout.astro';
+import Icon from '../components/Icon.astro';
+import { getAllPlugins, getRegistry, getThemes } from '../lib/data';
+
+const plugins = getAllPlugins();
+const registry = getRegistry();
+const themes = getThemes();
+
+const totalFiles = plugins.reduce((acc, p) => acc + p.files.length + p.adminPages.length, 0);
+const withSlots = plugins.filter(p => {
+  // check paths.json via registry — we just count plugins with known slots
+  return ['google-analytics','meta-pixel','adsense','email-list','cookie-consent','social-share','seo','related-posts'].includes(p.name);
+}).length;
+---
+
+<DashLayout title="Dashboard" activeSection="dashboard">
+  <div class="p-8">
+
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold text-slate-900">Dashboard</h1>
+      <p class="text-slate-500 mt-1">Visão geral do repositório central de plugins.</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Total de Plugins</p>
+        <p class="text-3xl font-bold text-slate-900">{plugins.length}</p>
+        <p class="text-sm text-slate-500 mt-1">{totalFiles} arquivos no total</p>
+      </div>
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Temas Integrados</p>
+        <p class="text-3xl font-bold text-slate-900">{themes.length}</p>
+        <p class="text-sm text-slate-500 mt-1">{themes.join(', ') || '—'}</p>
+      </div>
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Injeção Automática</p>
+        <p class="text-3xl font-bold text-slate-900">{withSlots}</p>
+        <p class="text-sm text-slate-500 mt-1">plugins com slot configurado</p>
+      </div>
+    </div>
+
+    <!-- Plugin grid -->
+    <div id="plugins" class="mb-2 flex items-center justify-between">
+      <h2 class="text-lg font-bold text-slate-800">Plugins</h2>
+      <span class="text-xs font-semibold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-full">{plugins.length} total</span>
+    </div>
+    <p class="text-sm text-slate-500 mb-6">Clique num plugin para ver detalhes, arquivos e configurações.</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {plugins.map(p => {
+        const ver = registry[p.name]?.version ?? p.version;
+        return (
+          <a
+            href={`/plugin/${p.name}`}
+            class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col gap-4 group"
+          >
+            <div class="flex items-start justify-between">
+              <div class={`w-11 h-11 rounded-xl ${p.hub.bg} flex items-center justify-center shrink-0`}>
+                <Icon name={p.hub.icon} class={`w-5 h-5 ${p.hub.color}`} />
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full font-mono">v{ver}</span>
+                <Icon name="ChevronRight" class="w-4 h-4 text-slate-300 group-hover:text-slate-500 group-hover:translate-x-0.5 transition-all" />
+              </div>
+            </div>
+            <div>
+              <h3 class="font-bold text-slate-800 mb-1">{p.hub.label}</h3>
+              <p class="text-sm text-slate-500 leading-relaxed">{p.hub.description}</p>
+            </div>
+            <div class="flex items-center gap-3 pt-1 border-t border-slate-100">
+              <span class="text-xs text-slate-400">{p.files.length} arquivo{p.files.length !== 1 ? 's' : ''}</span>
+              {p.adminPages.length > 0 && (
+                <span class="text-xs text-slate-400">{p.adminPages.length} página admin</span>
+              )}
+            </div>
+          </a>
+        );
+      })}
+    </div>
+
+  </div>
+</DashLayout>

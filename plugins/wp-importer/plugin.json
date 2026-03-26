@@ -2,13 +2,8 @@
   "name": "wp-importer",
   "version": "1.0.0",
   "description": "Importador de posts do WordPress",
-  "files": [
-    { "src": "ImportPage.tsx",          "dest": "src/plugins/wp-importer/ImportPage.tsx" },
-    { "src": "wordpress-importer.ts",   "dest": "src/plugins/wp-importer/wordpress-importer.ts" }
-  ],
-  "adminPages": [
-    { "src": "import-wp.astro", "dest": "src/pages/admin/import-wp.astro" }
-  ],
+  "files": ["ImportPage.tsx", "wordpress-importer.ts"],
+  "adminPages": ["import-wp.astro"],
   "configDefaults": {},
   "hub": {
     "label": "WP Importer",
@@ -18,6 +13,5 @@
     "bg": "bg-emerald-50",
     "href": "/admin/import-wp"
   },
-  "slots": [],
   "changelog": "Versão inicial"
 }

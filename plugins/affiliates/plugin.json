@@ -2,13 +2,8 @@
   "name": "affiliates",
   "version": "1.0.0",
   "description": "Gerenciador de produtos afiliados",
-  "files": [
-    { "src": "AffiliateManager.tsx",   "dest": "src/plugins/affiliates/AffiliateManager.tsx" },
-    { "src": "AffiliateProducts.astro","dest": "src/plugins/affiliates/AffiliateProducts.astro" }
-  ],
-  "adminPages": [
-    { "src": "affiliates.astro", "dest": "src/pages/admin/affiliates.astro" }
-  ],
+  "files": ["AffiliateManager.tsx", "AffiliateProducts.astro"],
+  "adminPages": ["affiliates.astro"],
   "configDefaults": {
     "affiliates": {
       "enabled": true,
@@ -19,7 +14,7 @@
       "showRatings": true,
       "showProscons": true,
       "showBadges": true,
-      "disclaimer": "Este artigo contém links de afiliado. Podemos receber uma comissão por compras feitas através deles.",
+      "disclaimer": "Este artigo contém links de afiliado.",
       "showDisclaimer": true
     }
   },
@@ -31,6 +26,5 @@
     "bg": "bg-rose-50",
     "href": "/admin/affiliates"
   },
-  "slots": [],
   "changelog": "Versão inicial"
 }

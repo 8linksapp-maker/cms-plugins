@@ -2,13 +2,8 @@
   "name": "social-share",
   "version": "1.0.0",
   "description": "Botões de compartilhamento social",
-  "files": [
-    { "src": "SocialShare.astro",        "dest": "src/plugins/social-share/SocialShare.astro" },
-    { "src": "SettingsSocialShare.tsx",  "dest": "src/plugins/social-share/SettingsSocialShare.tsx" }
-  ],
-  "adminPages": [
-    { "src": "social-share.astro", "dest": "src/pages/admin/social-share.astro" }
-  ],
+  "files": ["SocialShare.astro", "SettingsSocialShare.tsx"],
+  "adminPages": ["social-share.astro"],
   "configDefaults": {
     "socialShare": {
       "enabled": true,
@@ -25,12 +20,5 @@
     "bg": "bg-violet-50",
     "href": "/admin/social-share"
   },
-  "slots": [
-    {
-      "slot": "post-bottom",
-      "import": "import SocialShare from '../social-share/SocialShare.astro';",
-      "component": "<SocialShare title={title} context=\"post-bottom\" />"
-    }
-  ],
   "changelog": "Versão inicial"
 }

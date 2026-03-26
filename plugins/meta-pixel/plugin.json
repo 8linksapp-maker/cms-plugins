@@ -2,13 +2,8 @@
   "name": "meta-pixel",
   "version": "1.0.0",
   "description": "Meta Pixel (Facebook Pixel)",
-  "files": [
-    { "src": "MetaPixel.astro",          "dest": "src/plugins/meta-pixel/MetaPixel.astro" },
-    { "src": "SettingsMetaPixel.tsx",    "dest": "src/plugins/meta-pixel/SettingsMetaPixel.tsx" }
-  ],
-  "adminPages": [
-    { "src": "meta-pixel.astro", "dest": "src/pages/admin/meta-pixel.astro" }
-  ],
+  "files": ["MetaPixel.astro", "SettingsMetaPixel.tsx"],
+  "adminPages": ["meta-pixel.astro"],
   "configDefaults": {
     "metaPixel": { "pixelId": "" }
   },
@@ -20,12 +15,5 @@
     "bg": "bg-blue-50",
     "href": "/admin/meta-pixel"
   },
-  "slots": [
-    {
-      "slot": "head",
-      "import": "import MetaPixel from '../meta-pixel/MetaPixel.astro';",
-      "component": "<MetaPixel />"
-    }
-  ],
   "changelog": "Versão inicial"
 }

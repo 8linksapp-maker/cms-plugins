@@ -1,0 +1,102 @@
+---
+import Icon from '../components/Icon.astro';
+
+interface Props {
+  title: string;
+  activeSection?: string;
+}
+const { title, activeSection = '' } = Astro.props;
+
+const nav = [
+  { label: 'Dashboard', href: '/', section: 'dashboard', icon: 'LayoutDashboard' },
+  { label: 'Plugins', href: '/#plugins', section: 'plugins', icon: 'Package' },
+];
+---
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title} — cms-plugins</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased">
+
+  <!-- Sidebar -->
+  <aside class="fixed inset-y-0 left-0 w-64 bg-white border-r border-slate-100 flex flex-col z-50 shadow-sm">
+
+    <!-- Logo -->
+    <div class="h-16 flex items-center px-6 border-b border-slate-100 shrink-0">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 bg-violet-600 rounded-lg flex items-center justify-center">
+          <Icon name="Package" class="w-4 h-4 text-white" />
+        </div>
+        <div>
+          <p class="font-bold text-slate-800 text-sm leading-none">cms-plugins</p>
+          <p class="text-[10px] text-slate-400 mt-0.5">Repositório central</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 overflow-y-auto py-4 px-3">
+      <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3 mb-2">Menu</p>
+      {nav.map(item => (
+        <a
+          href={item.href}
+          class={`flex items-center gap-3 px-3 py-2.5 rounded-xl mb-0.5 transition-all group ${
+            activeSection === item.section
+              ? 'bg-violet-50 text-violet-700'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+          }`}
+        >
+          <Icon
+            name={item.icon}
+            class={`w-4 h-4 shrink-0 ${activeSection === item.section ? 'text-violet-600' : 'text-slate-400 group-hover:text-slate-600'}`}
+          />
+          <span class={`text-sm font-medium flex-1 ${activeSection === item.section ? 'font-semibold' : ''}`}>
+            {item.label}
+          </span>
+          {activeSection === item.section && (
+            <Icon name="ChevronRight" class="w-3 h-3 text-violet-400" />
+          )}
+        </a>
+      ))}
+
+      <div class="mt-6">
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3 mb-2">Temas</p>
+        <a
+          href="/theme/walker"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-xl mb-0.5 text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all group"
+        >
+          <span class="w-4 h-4 rounded bg-violet-100 flex items-center justify-center shrink-0">
+            <span class="text-[8px] font-black text-violet-600">W</span>
+          </span>
+          <span class="text-sm font-medium">Walker</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- Footer -->
+    <div class="p-4 border-t border-slate-100">
+      <a
+        href="https://github.com/8linksapp-maker/cms-plugins"
+        target="_blank"
+        rel="noopener"
+        class="flex items-center gap-2 text-xs text-slate-400 hover:text-slate-600 transition-colors"
+      >
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/>
+        </svg>
+        Ver no GitHub
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="ml-64 min-h-screen">
+    <slot />
+  </main>
+
+</body>
+</html>

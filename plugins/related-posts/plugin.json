@@ -2,15 +2,10 @@
   "name": "related-posts",
   "version": "1.0.0",
   "description": "Posts relacionados por categoria",
-  "files": [
-    { "src": "RelatedPosts.astro", "dest": "src/plugins/related-posts/RelatedPosts.astro" }
-  ],
+  "files": ["RelatedPosts.astro"],
   "adminPages": [],
   "configDefaults": {
-    "relatedPosts": {
-      "enabled": true,
-      "count": 3
-    }
+    "relatedPosts": { "enabled": true, "count": 3 }
   },
   "hub": {
     "label": "Related Posts",
@@ -20,12 +15,5 @@
     "bg": "bg-indigo-50",
     "href": "/admin/plugins"
   },
-  "slots": [
-    {
-      "slot": "post-after",
-      "import": "import RelatedPosts from '../related-posts/RelatedPosts.astro';",
-      "component": "<RelatedPosts currentSlug={slug} category={category} />"
-    }
-  ],
   "changelog": "Versão inicial"
 }

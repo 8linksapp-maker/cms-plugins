@@ -2,12 +2,8 @@
   "name": "redirects",
   "version": "1.0.0",
   "description": "Gerenciador de redirects 301/302",
-  "files": [
-    { "src": "RedirectsManager.tsx", "dest": "src/plugins/redirects/RedirectsManager.tsx" }
-  ],
-  "adminPages": [
-    { "src": "redirects.astro", "dest": "src/pages/admin/redirects.astro" }
-  ],
+  "files": ["RedirectsManager.tsx"],
+  "adminPages": ["redirects.astro"],
   "configDefaults": {
     "redirects": { "enabled": true }
   },
@@ -19,6 +15,5 @@
     "bg": "bg-amber-50",
     "href": "/admin/redirects"
   },
-  "slots": [],
   "changelog": "Versão inicial"
 }

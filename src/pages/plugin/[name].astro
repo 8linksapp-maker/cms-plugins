@@ -1,0 +1,216 @@
+---
+import DashLayout from '../../layouts/DashLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { getPlugin, getPluginNames, getWalkerPaths } from '../../lib/data';
+
+export function getStaticPaths() {
+  return getPluginNames().map(name => ({ params: { name } }));
+}
+
+const { name } = Astro.params;
+const plugin = getPlugin(name);
+const walkerPaths = getWalkerPaths();
+const wp = walkerPaths[name];
+
+const slotLabels: Record<string, string> = {
+  'head':        'Cabeçalho (<head>)',
+  'body-end':    'Fim do body (</body>)',
+  'post-bottom': 'Rodapé do post',
+  'post-after':  'Após o autor',
+  'post-schema': 'Schema markup do post',
+};
+
+const fileExt = (f: string) => f.split('.').pop() ?? '';
+const extColor: Record<string, string> = {
+  astro: 'bg-violet-100 text-violet-700',
+  tsx:   'bg-blue-100 text-blue-700',
+  ts:    'bg-sky-100 text-sky-700',
+};
+---
+
+<DashLayout title={plugin.hub.label} activeSection="">
+  <div class="p-8">
+
+    <!-- Breadcrumb -->
+    <div class="flex items-center gap-2 text-sm text-slate-400 mb-6">
+      <a href="/" class="hover:text-violet-600 transition-colors">Dashboard</a>
+      <Icon name="ChevronRight" class="w-3.5 h-3.5" />
+      <span class="text-slate-700 font-medium">{plugin.hub.label}</span>
+    </div>
+
+    <!-- Header -->
+    <div class="flex items-start gap-5 mb-8">
+      <div class={`w-16 h-16 rounded-2xl ${plugin.hub.bg} flex items-center justify-center shrink-0`}>
+        <Icon name={plugin.hub.icon} class={`w-8 h-8 ${plugin.hub.color}`} />
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-3 flex-wrap">
+          <h1 class="text-2xl font-bold text-slate-900">{plugin.hub.label}</h1>
+          <span class="text-sm font-bold font-mono bg-slate-100 text-slate-500 px-2.5 py-1 rounded-full">v{plugin.version}</span>
+        </div>
+        <p class="text-slate-500 mt-1">{plugin.hub.description}</p>
+        <p class="text-xs text-slate-400 mt-1 font-mono">{name}</p>
+      </div>
+      <a
+        href="/"
+        class="flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-violet-600 transition-colors shrink-0"
+      >
+        <Icon name="ArrowLeft" class="w-4 h-4" />
+        Voltar
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <!-- Left column: files + slots -->
+      <div class="lg:col-span-2 space-y-6">
+
+        <!-- Files -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <div class="flex items-center gap-2 mb-5">
+            <Icon name="FileText" class="w-4 h-4 text-slate-400" />
+            <h2 class="font-bold text-slate-800">Arquivos do Plugin</h2>
+            <span class="ml-auto text-xs font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">{plugin.files.length + plugin.adminPages.length}</span>
+          </div>
+
+          {plugin.files.length > 0 && (
+            <div class="mb-4">
+              <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Componentes</p>
+              <div class="space-y-1.5">
+                {plugin.files.map((f: string) => {
+                  const ext = fileExt(f);
+                  const color = extColor[ext] ?? 'bg-slate-100 text-slate-600';
+                  const dest = wp?.files.find((pf: any) => pf.src === f)?.dest;
+                  return (
+                    <div class="flex items-center gap-3 p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors">
+                      <span class={`text-[10px] font-bold px-1.5 py-0.5 rounded font-mono uppercase shrink-0 ${color}`}>{ext}</span>
+                      <span class="text-sm font-mono text-slate-700 font-medium truncate">{f}</span>
+                      {dest && (
+                        <span class="ml-auto text-[10px] font-mono text-slate-400 truncate hidden md:block">{dest}</span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {plugin.adminPages.length > 0 && (
+            <div>
+              <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Páginas Admin</p>
+              <div class="space-y-1.5">
+                {plugin.adminPages.map((f: string) => {
+                  const dest = wp?.adminPages.find((pf: any) => pf.src === f)?.dest;
+                  return (
+                    <div class="flex items-center gap-3 p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors">
+                      <span class="text-[10px] font-bold px-1.5 py-0.5 rounded font-mono uppercase shrink-0 bg-emerald-100 text-emerald-700">astro</span>
+                      <span class="text-sm font-mono text-slate-700 font-medium truncate">{f}</span>
+                      {dest && (
+                        <span class="ml-auto text-[10px] font-mono text-slate-400 truncate hidden md:block">{dest}</span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <!-- Slots (Walker) -->
+        {wp?.slots && wp.slots.length > 0 && (
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+            <div class="flex items-center gap-2 mb-5">
+              <Icon name="Settings" class="w-4 h-4 text-slate-400" />
+              <h2 class="font-bold text-slate-800">Injeção Automática</h2>
+              <span class="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full ml-1">Walker</span>
+            </div>
+            <div class="space-y-3">
+              {wp.slots.map((s: any) => (
+                <div class="p-4 rounded-xl bg-violet-50 border border-violet-100">
+                  <div class="flex items-center gap-2 mb-2">
+                    <span class="text-xs font-bold text-violet-600 uppercase tracking-wider">{slotLabels[s.slot] ?? s.slot}</span>
+                  </div>
+                  <code class="text-xs text-slate-600 block truncate font-mono">{s.import}</code>
+                  <code class="text-xs text-violet-700 block mt-1 font-mono font-bold">{s.component}</code>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <!-- Config Defaults -->
+        {Object.keys(plugin.configDefaults).length > 0 && (
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+            <div class="flex items-center gap-2 mb-5">
+              <Icon name="Settings" class="w-4 h-4 text-slate-400" />
+              <h2 class="font-bold text-slate-800">Configuração Padrão</h2>
+            </div>
+            <pre class="text-xs font-mono text-slate-600 bg-slate-50 rounded-xl p-4 overflow-x-auto leading-relaxed">{JSON.stringify(plugin.configDefaults, null, 2)}</pre>
+          </div>
+        )}
+
+      </div>
+
+      <!-- Right column: meta + changelog -->
+      <div class="space-y-6">
+
+        <!-- Meta -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <h2 class="font-bold text-slate-800 mb-4">Informações</h2>
+          <div class="space-y-3">
+            <div>
+              <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Versão</p>
+              <p class="text-sm font-bold font-mono text-slate-700">{plugin.version}</p>
+            </div>
+            <div>
+              <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Identificador</p>
+              <p class="text-sm font-mono text-slate-600">{name}</p>
+            </div>
+            <div>
+              <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Arquivos</p>
+              <p class="text-sm text-slate-600">{plugin.files.length} componente{plugin.files.length !== 1 ? 's' : ''}</p>
+            </div>
+            {plugin.adminPages.length > 0 && (
+              <div>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Páginas Admin</p>
+                <p class="text-sm text-slate-600">{plugin.adminPages.length} página{plugin.adminPages.length !== 1 ? 's' : ''}</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <!-- Temas -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <h2 class="font-bold text-slate-800 mb-4">Temas</h2>
+          <a
+            href="/theme/walker"
+            class="flex items-center gap-3 p-3 rounded-xl bg-violet-50 border border-violet-100 hover:bg-violet-100 transition-colors"
+          >
+            <span class="w-7 h-7 rounded-lg bg-violet-600 flex items-center justify-center">
+              <span class="text-[10px] font-black text-white">W</span>
+            </span>
+            <div>
+              <p class="text-sm font-bold text-violet-800">Walker</p>
+              <p class="text-xs text-violet-600">paths.json configurado</p>
+            </div>
+            <Icon name="ChevronRight" class="w-3.5 h-3.5 text-violet-400 ml-auto" />
+          </a>
+        </div>
+
+        <!-- Changelog -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <h2 class="font-bold text-slate-800 mb-4">Changelog</h2>
+          <div class="flex items-start gap-3">
+            <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">✓</span>
+            <div>
+              <p class="text-xs font-bold text-slate-500 font-mono mb-0.5">v{plugin.version}</p>
+              <p class="text-sm text-slate-600">{plugin.changelog}</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</DashLayout>

@@ -3,16 +3,14 @@
   "version": "1.0.0",
   "description": "Captura de emails com popup e banner inline",
   "files": [
-    { "src": "EmailPopup.astro",         "dest": "src/plugins/email-list/EmailPopup.astro" },
-    { "src": "EmailInlineBanner.astro",  "dest": "src/plugins/email-list/EmailInlineBanner.astro" },
-    { "src": "SettingsEmailList.tsx",    "dest": "src/plugins/email-list/SettingsEmailList.tsx" },
-    { "src": "LeadsPanel.tsx",           "dest": "src/plugins/email-list/LeadsPanel.tsx" },
-    { "src": "EmailSequenceEditor.tsx",  "dest": "src/plugins/email-list/EmailSequenceEditor.tsx" },
-    { "src": "brevo-api.ts",             "dest": "src/plugins/email-list/brevo-api.ts" }
+    "EmailPopup.astro",
+    "EmailInlineBanner.astro",
+    "SettingsEmailList.tsx",
+    "LeadsPanel.tsx",
+    "EmailSequenceEditor.tsx",
+    "brevo-api.ts"
   ],
-  "adminPages": [
-    { "src": "email-list.astro", "dest": "src/pages/admin/email-list.astro" }
-  ],
+  "adminPages": ["email-list.astro"],
   "configDefaults": {
     "emailList": {
       "brevoApiKey": "",
@@ -25,17 +23,8 @@
         "triggerValue": 20,
         "showOnce": false
       },
-      "sidebar": {
-        "enabled": true,
-        "headline": "Newsletter",
-        "subheadline": "Junte-se a nossos leitores!"
-      },
-      "inline": {
-        "enabled": true,
-        "headline": "Gostando do conteúdo?",
-        "subheadline": "Receba artigos como este direto no seu e-mail.",
-        "position": 3
-      },
+      "sidebar": { "enabled": true, "headline": "Newsletter", "subheadline": "Junte-se a nossos leitores!" },
+      "inline": { "enabled": true, "headline": "Gostando do conteúdo?", "subheadline": "Receba artigos como este direto no seu e-mail.", "position": 3 },
       "sequences": []
     }
   },
@@ -47,12 +36,5 @@
     "bg": "bg-purple-50",
     "href": "/admin/email-list"
   },
-  "slots": [
-    {
-      "slot": "body-end",
-      "import": "import EmailPopup from '../email-list/EmailPopup.astro';",
-      "component": "<EmailPopup />"
-    }
-  ],
   "changelog": "Versão inicial"
 }
