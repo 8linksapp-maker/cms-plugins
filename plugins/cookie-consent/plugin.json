@@ -1,0 +1,39 @@
+{
+  "name": "cookie-consent",
+  "version": "1.0.0",
+  "description": "Banner de consentimento de cookies (LGPD)",
+  "files": [
+    { "src": "CookieConsent.astro",        "dest": "src/plugins/cookie-consent/CookieConsent.astro" },
+    { "src": "SettingsCookieConsent.tsx",  "dest": "src/plugins/cookie-consent/SettingsCookieConsent.tsx" }
+  ],
+  "adminPages": [
+    { "src": "cookie-consent.astro", "dest": "src/pages/admin/cookie-consent.astro" }
+  ],
+  "configDefaults": {
+    "cookieConsent": {
+      "enabled": true,
+      "headline": "Privacidade e Cookies",
+      "description": "Utilizamos cookies para melhorar sua experiência. Ao clicar em \"Aceitar\", você concorda com nossa política de privacidade.",
+      "buttonAccept": "Aceitar",
+      "buttonReject": "Ler Política",
+      "rejectUrl": "/privacidade",
+      "position": "bottom"
+    }
+  },
+  "hub": {
+    "label": "Cookie Consent",
+    "description": "Banner de cookies com conformidade LGPD. Bloqueia GA e Pixel até aceite.",
+    "icon": "Shield",
+    "color": "text-slate-600",
+    "bg": "bg-slate-50",
+    "href": "/admin/cookie-consent"
+  },
+  "slots": [
+    {
+      "slot": "body-end",
+      "import": "import CookieConsent from '../cookie-consent/CookieConsent.astro';",
+      "component": "<CookieConsent />"
+    }
+  ],
+  "changelog": "Versão inicial"
+}

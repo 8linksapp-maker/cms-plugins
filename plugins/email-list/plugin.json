@@ -1,0 +1,58 @@
+{
+  "name": "email-list",
+  "version": "1.0.0",
+  "description": "Captura de emails com popup e banner inline",
+  "files": [
+    { "src": "EmailPopup.astro",         "dest": "src/plugins/email-list/EmailPopup.astro" },
+    { "src": "EmailInlineBanner.astro",  "dest": "src/plugins/email-list/EmailInlineBanner.astro" },
+    { "src": "SettingsEmailList.tsx",    "dest": "src/plugins/email-list/SettingsEmailList.tsx" },
+    { "src": "LeadsPanel.tsx",           "dest": "src/plugins/email-list/LeadsPanel.tsx" },
+    { "src": "EmailSequenceEditor.tsx",  "dest": "src/plugins/email-list/EmailSequenceEditor.tsx" },
+    { "src": "brevo-api.ts",             "dest": "src/plugins/email-list/brevo-api.ts" }
+  ],
+  "adminPages": [
+    { "src": "email-list.astro", "dest": "src/pages/admin/email-list.astro" }
+  ],
+  "configDefaults": {
+    "emailList": {
+      "brevoApiKey": "",
+      "brevoListId": "",
+      "popup": {
+        "enabled": true,
+        "headline": "Inscreva-se na nossa Newsletter",
+        "subheadline": "Receba os melhores conteúdos direto no seu e-mail.",
+        "triggerType": "scroll",
+        "triggerValue": 20,
+        "showOnce": false
+      },
+      "sidebar": {
+        "enabled": true,
+        "headline": "Newsletter",
+        "subheadline": "Junte-se a nossos leitores!"
+      },
+      "inline": {
+        "enabled": true,
+        "headline": "Gostando do conteúdo?",
+        "subheadline": "Receba artigos como este direto no seu e-mail.",
+        "position": 3
+      },
+      "sequences": []
+    }
+  },
+  "hub": {
+    "label": "Email List",
+    "description": "Popup, banner inline e sequências de email com Brevo.",
+    "icon": "Mail",
+    "color": "text-purple-600",
+    "bg": "bg-purple-50",
+    "href": "/admin/email-list"
+  },
+  "slots": [
+    {
+      "slot": "body-end",
+      "import": "import EmailPopup from '../email-list/EmailPopup.astro';",
+      "component": "<EmailPopup />"
+    }
+  ],
+  "changelog": "Versão inicial"
+}

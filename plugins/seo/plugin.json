@@ -1,0 +1,40 @@
+{
+  "name": "seo",
+  "version": "1.0.0",
+  "description": "SEO Schema Markup + Score Widget",
+  "files": [
+    { "src": "SchemaMarkup.astro",  "dest": "src/plugins/seo/SchemaMarkup.astro" },
+    { "src": "SEOScoreWidget.tsx",  "dest": "src/plugins/seo/SEOScoreWidget.tsx" },
+    { "src": "SettingsSEO.tsx",     "dest": "src/plugins/seo/SettingsSEO.tsx" }
+  ],
+  "adminPages": [
+    { "src": "seo.astro", "dest": "src/pages/admin/seo.astro" }
+  ],
+  "configDefaults": {
+    "seo": {
+      "enabled": true,
+      "orgName": "",
+      "orgLogo": "",
+      "sameAs": [],
+      "articleSchema": true,
+      "breadcrumbSchema": true,
+      "websiteSchema": true
+    }
+  },
+  "hub": {
+    "label": "SEO Toolkit",
+    "description": "Schema markup automático (Article, Breadcrumb, WebSite) e score SEO.",
+    "icon": "Search",
+    "color": "text-teal-600",
+    "bg": "bg-teal-50",
+    "href": "/admin/seo"
+  },
+  "slots": [
+    {
+      "slot": "post-schema",
+      "import": "import SchemaMarkup from '../seo/SchemaMarkup.astro';",
+      "component": "<SchemaMarkup title={title} description={description} url={url} image={heroImage} datePublished={pubDate} authorName={authorName} category={category} />"
+    }
+  ],
+  "changelog": "Versão inicial"
+}

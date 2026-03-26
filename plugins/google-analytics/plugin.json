@@ -1,0 +1,31 @@
+{
+  "name": "google-analytics",
+  "version": "1.0.0",
+  "description": "Google Analytics GA4",
+  "files": [
+    { "src": "GoogleAnalytics.astro", "dest": "src/plugins/google-analytics/GoogleAnalytics.astro" },
+    { "src": "SettingsGA.tsx",        "dest": "src/plugins/google-analytics/SettingsGA.tsx" }
+  ],
+  "adminPages": [
+    { "src": "analytics.astro", "dest": "src/pages/admin/analytics.astro" }
+  ],
+  "configDefaults": {
+    "googleAnalytics": { "measurementId": "" }
+  },
+  "hub": {
+    "label": "Google Analytics",
+    "description": "Rastreie visitas e comportamento dos leitores com GA4.",
+    "icon": "BarChart3",
+    "color": "text-orange-600",
+    "bg": "bg-orange-50",
+    "href": "/admin/analytics"
+  },
+  "slots": [
+    {
+      "slot": "head",
+      "import": "import GoogleAnalytics from '../google-analytics/GoogleAnalytics.astro';",
+      "component": "<GoogleAnalytics />"
+    }
+  ],
+  "changelog": "Versão inicial"
+}

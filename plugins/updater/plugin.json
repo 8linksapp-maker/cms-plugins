@@ -1,0 +1,22 @@
+{
+  "name": "updater",
+  "version": "1.0.0",
+  "description": "Painel de atualizações do template",
+  "files": [
+    { "src": "UpdatesPanel.tsx", "dest": "src/plugins/updater/UpdatesPanel.tsx" }
+  ],
+  "adminPages": [
+    { "src": "updates.astro", "dest": "src/pages/admin/updates.astro" }
+  ],
+  "configDefaults": {},
+  "hub": {
+    "label": "Atualizações",
+    "description": "Verifique e instale atualizações do template Walker.",
+    "icon": "RefreshCw",
+    "color": "text-sky-600",
+    "bg": "bg-sky-50",
+    "href": "/admin/updates"
+  },
+  "slots": [],
+  "changelog": "Versão inicial"
+}

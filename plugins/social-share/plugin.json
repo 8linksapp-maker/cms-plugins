@@ -1,0 +1,36 @@
+{
+  "name": "social-share",
+  "version": "1.0.0",
+  "description": "Botões de compartilhamento social",
+  "files": [
+    { "src": "SocialShare.astro",        "dest": "src/plugins/social-share/SocialShare.astro" },
+    { "src": "SettingsSocialShare.tsx",  "dest": "src/plugins/social-share/SettingsSocialShare.tsx" }
+  ],
+  "adminPages": [
+    { "src": "social-share.astro", "dest": "src/pages/admin/social-share.astro" }
+  ],
+  "configDefaults": {
+    "socialShare": {
+      "enabled": true,
+      "sectionTitle": "Compartilhe nas redes sociais",
+      "platforms": ["facebook", "twitter", "whatsapp", "linkedin", "telegram", "copy"],
+      "style": "icon"
+    }
+  },
+  "hub": {
+    "label": "Social Share",
+    "description": "Botões de compartilhamento para Facebook, WhatsApp, Twitter e mais.",
+    "icon": "Share2",
+    "color": "text-violet-600",
+    "bg": "bg-violet-50",
+    "href": "/admin/social-share"
+  },
+  "slots": [
+    {
+      "slot": "post-bottom",
+      "import": "import SocialShare from '../social-share/SocialShare.astro';",
+      "component": "<SocialShare title={title} context=\"post-bottom\" />"
+    }
+  ],
+  "changelog": "Versão inicial"
+}

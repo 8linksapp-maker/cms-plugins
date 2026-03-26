@@ -1,0 +1,36 @@
+{
+  "name": "affiliates",
+  "version": "1.0.0",
+  "description": "Gerenciador de produtos afiliados",
+  "files": [
+    { "src": "AffiliateManager.tsx",   "dest": "src/plugins/affiliates/AffiliateManager.tsx" },
+    { "src": "AffiliateProducts.astro","dest": "src/plugins/affiliates/AffiliateProducts.astro" }
+  ],
+  "adminPages": [
+    { "src": "affiliates.astro", "dest": "src/pages/admin/affiliates.astro" }
+  ],
+  "configDefaults": {
+    "affiliates": {
+      "enabled": true,
+      "amazonTag": "",
+      "defaultButtonText": "Ver na Amazon",
+      "buttonColor": "#FF9900",
+      "showPrices": true,
+      "showRatings": true,
+      "showProscons": true,
+      "showBadges": true,
+      "disclaimer": "Este artigo contém links de afiliado. Podemos receber uma comissão por compras feitas através deles.",
+      "showDisclaimer": true
+    }
+  },
+  "hub": {
+    "label": "Afiliados",
+    "description": "Crie boxes de produtos afiliados com pros/cons, preço e avaliação.",
+    "icon": "ShoppingCart",
+    "color": "text-rose-600",
+    "bg": "bg-rose-50",
+    "href": "/admin/affiliates"
+  },
+  "slots": [],
+  "changelog": "Versão inicial"
+}

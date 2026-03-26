@@ -1,0 +1,24 @@
+{
+  "name": "redirects",
+  "version": "1.0.0",
+  "description": "Gerenciador de redirects 301/302",
+  "files": [
+    { "src": "RedirectsManager.tsx", "dest": "src/plugins/redirects/RedirectsManager.tsx" }
+  ],
+  "adminPages": [
+    { "src": "redirects.astro", "dest": "src/pages/admin/redirects.astro" }
+  ],
+  "configDefaults": {
+    "redirects": { "enabled": true }
+  },
+  "hub": {
+    "label": "Redirects",
+    "description": "Crie e gerencie redirects 301/302 sem editar código.",
+    "icon": "ArrowRight",
+    "color": "text-amber-600",
+    "bg": "bg-amber-50",
+    "href": "/admin/redirects"
+  },
+  "slots": [],
+  "changelog": "Versão inicial"
+}

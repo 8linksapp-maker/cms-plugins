@@ -1,0 +1,32 @@
+{
+  "name": "ai-generator",
+  "version": "1.0.0",
+  "description": "Gerador de posts com IA (OpenAI/Anthropic)",
+  "files": [
+    { "src": "AIPostGenerator.tsx", "dest": "src/plugins/ai-generator/AIPostGenerator.tsx" },
+    { "src": "SettingsAI.tsx",      "dest": "src/plugins/ai-generator/SettingsAI.tsx" },
+    { "src": "ai-provider.ts",      "dest": "src/plugins/ai-generator/ai-provider.ts" },
+    { "src": "generate.ts",         "dest": "src/plugins/ai-generator/generate.ts" },
+    { "src": "pexels.ts",           "dest": "src/plugins/ai-generator/pexels.ts" }
+  ],
+  "adminPages": [
+    { "src": "ai.astro", "dest": "src/pages/admin/ai.astro" }
+  ],
+  "configDefaults": {
+    "ai": {
+      "provider": "openai",
+      "apiKey": "",
+      "pexelsApiKey": ""
+    }
+  },
+  "hub": {
+    "label": "AI Generator",
+    "description": "Gere posts completos com IA a partir de um título ou tema.",
+    "icon": "Sparkles",
+    "color": "text-pink-600",
+    "bg": "bg-pink-50",
+    "href": "/admin/ai"
+  },
+  "slots": [],
+  "changelog": "Versão inicial"
+}
