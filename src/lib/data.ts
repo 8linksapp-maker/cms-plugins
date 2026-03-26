@@ -53,10 +53,15 @@ export function getAllPlugins(): PluginMeta[] {
   return getPluginNames().map(getPlugin);
 }
 
-export function getWalkerPaths(): Record<string, WalkerPaths> {
+export function getTemplatePaths(name: string): Record<string, WalkerPaths> {
   return JSON.parse(
-    readFileSync(resolve(ROOT, 'templates/walker/paths.json'), 'utf-8')
+    readFileSync(resolve(ROOT, `templates/${name}/paths.json`), 'utf-8')
   );
+}
+
+/** @deprecated use getTemplatePaths('walker') */
+export function getWalkerPaths(): Record<string, WalkerPaths> {
+  return getTemplatePaths('walker');
 }
 
 export interface ThemeMeta {

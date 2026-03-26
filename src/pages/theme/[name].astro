@@ -1,9 +1,15 @@
 ---
 import DashLayout from '../../layouts/DashLayout.astro';
 import Icon from '../../components/Icon.astro';
-import { getWalkerPaths, getAllPlugins } from '../../lib/data';
+import { getTheme, getThemeNames, getTemplatePaths, getAllPlugins } from '../../lib/data';
 
-const paths = getWalkerPaths();
+export function getStaticPaths() {
+  return getThemeNames().map(name => ({ params: { name } }));
+}
+
+const { name } = Astro.params;
+const theme = getTheme(name);
+const paths = getTemplatePaths(name);
 const plugins = getAllPlugins();
 
 const slotLabels: Record<string, string> = {
@@ -18,28 +24,28 @@ const pluginsWithSlots = Object.entries(paths).filter(([, v]) => v.slots?.length
 const totalFiles = Object.values(paths).reduce((acc, v) => acc + v.files.length + v.adminPages.length, 0);
 ---
 
-<DashLayout title="Tema Walker" activeSection="theme-walker">
+<DashLayout title={`Tema ${theme.label}`} activeSection={`theme-${name}`}>
   <div class="p-8">
 
     <!-- Breadcrumb -->
     <div class="flex items-center gap-2 text-sm text-slate-400 mb-6">
       <a href="/" class="hover:text-violet-600 transition-colors">Dashboard</a>
       <Icon name="ChevronRight" class="w-3.5 h-3.5" />
-      <span class="text-slate-700 font-medium">Tema Walker</span>
+      <span class="text-slate-700 font-medium">Tema {theme.label}</span>
     </div>
 
     <!-- Header -->
     <div class="flex items-start gap-5 mb-8">
       <div class="w-16 h-16 bg-violet-600 rounded-2xl flex items-center justify-center shrink-0">
-        <span class="text-2xl font-black text-white">W</span>
+        <span class="text-2xl font-black text-white">{theme.label.charAt(0).toUpperCase()}</span>
       </div>
       <div class="flex-1">
         <div class="flex items-center gap-3">
-          <h1 class="text-2xl font-bold text-slate-900">Walker</h1>
-          <span class="text-xs font-bold bg-violet-100 text-violet-700 px-2.5 py-1 rounded-full">Ativo</span>
+          <h1 class="text-2xl font-bold text-slate-900">{theme.label}</h1>
+          <span class="text-xs font-bold bg-violet-100 text-violet-700 px-2.5 py-1 rounded-full">{theme.status}</span>
         </div>
-        <p class="text-slate-500 mt-1">Mapeamento de caminhos e slots para o tema Walker.</p>
-        <p class="text-xs text-slate-400 mt-1 font-mono">templates/walker/paths.json</p>
+        <p class="text-slate-500 mt-1">{theme.description}</p>
+        <p class="text-xs text-slate-400 mt-1 font-mono">templates/{name}/paths.json</p>
       </div>
       <a href="/" class="flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-violet-600 transition-colors shrink-0">
         <Icon name="ArrowLeft" class="w-4 h-4" />
@@ -120,7 +126,7 @@ const totalFiles = Object.values(paths).reduce((acc, v) => acc + v.files.length 
             <tr>
               <th class="text-left px-5 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Plugin</th>
               <th class="text-left px-5 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Arquivo</th>
-              <th class="text-left px-5 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Destino no Walker</th>
+              <th class="text-left px-5 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Destino no {theme.label}</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
