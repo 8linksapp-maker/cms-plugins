@@ -8,7 +8,7 @@
   "email-list":       { "version": "1.0.0", "description": "Captura de emails com popup e banner inline" },
   "cookie-consent":   { "version": "1.0.0", "description": "Banner de consentimento de cookies (LGPD)" },
   "redirects":        { "version": "1.0.0", "description": "Gerenciador de redirects 301/302" },
-  "affiliates":       { "version": "1.0.0", "description": "Gerenciador de produtos afiliados" },
+  "affiliates":       { "version": "1.0.1", "description": "Gerenciador de produtos afiliados" },
   "ai-generator":     { "version": "1.0.0", "description": "Gerador de posts com IA (OpenAI/Anthropic)" },
   "search-console":   { "version": "1.0.0", "description": "Google Search Console" },
   "wp-importer":      { "version": "1.0.1", "description": "Importador de posts do WordPress" },

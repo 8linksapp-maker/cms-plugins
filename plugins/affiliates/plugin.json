@@ -1,13 +1,15 @@
 {
   "name": "affiliates",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Gerenciador de produtos afiliados",
-  "files": ["AffiliateManager.tsx", "AffiliateProducts.astro"],
+  "files": ["AffiliateManager.tsx", "AffiliateProducts.astro", "amazon-product.ts"],
   "adminPages": ["affiliates.astro"],
   "configDefaults": {
     "affiliates": {
       "enabled": true,
       "amazonTag": "",
+      "amazonAccessKey": "",
+      "amazonSecretKey": "",
       "defaultButtonText": "Ver na Amazon",
       "buttonColor": "#FF9900",
       "showPrices": true,
@@ -26,5 +28,5 @@
     "bg": "bg-rose-50",
     "href": "/admin/affiliates"
   },
-  "changelog": "Versão inicial"
+  "changelog": "v1.0.1: Redesign do admin com prévia ao vivo, integração com Amazon PA-API 5.0 para importar produtos pelo ASIN, e configuração de credenciais diretamente no painel."
 }

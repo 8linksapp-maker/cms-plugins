@@ -141,7 +141,8 @@
   "affiliates": {
     "files": [
       { "src": "AffiliateManager.tsx",    "dest": "src/plugins/affiliates/AffiliateManager.tsx" },
-      { "src": "AffiliateProducts.astro", "dest": "src/plugins/affiliates/AffiliateProducts.astro" }
+      { "src": "AffiliateProducts.astro", "dest": "src/plugins/affiliates/AffiliateProducts.astro" },
+      { "src": "amazon-product.ts",       "dest": "src/pages/api/admin/amazon-product.ts" }
     ],
     "adminPages": [
       { "src": "affiliates.astro", "dest": "src/pages/admin/affiliates.astro" }
