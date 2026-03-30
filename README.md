@@ -6,239 +6,261 @@ Repositório central de plugins e temas do ecossistema de criação de blogs.
 
 ## 1. Visão Geral do Ecossistema
 
-O ecossistema é composto por três repositórios independentes:
-
 ```
 ┌─────────────────────────────────┐
 │       admin-ui-boilerplate      │  ← Componentes React copy-paste
-│  Button, Modal, DataTable, ...  │     (usado sozinho ou via cms-core)
+│  Button, Modal, DataTable, ...  │
 └────────────────┬────────────────┘
                  │ embutido em
                  ▼
 ┌─────────────────────────────────┐
-│            cms-core             │  ← Base funcional completa
-│  auth · API CRUD · middleware   │     Clonar para novo tema
+│            cms-core             │  ← Base funcional + Walker template
+│  auth · API CRUD · middleware   │     Alunos deployam/forkeiam daqui
 │  admin pages · plugin system    │
-│  data layer · content schema    │
+│  src/plugins/ · update system   │
 └────────────────┬────────────────┘
-                 │ instala plugins via
+                 │ recebe plugins via
                  ▼
 ┌─────────────────────────────────┐
-│           cms-plugins           │  ← Este repositório
-│  14 plugins versionados         │     Analytics, SEO, email, ads...
-│  templates/  → mapeamento       │
+│           cms-plugins           │  ← ESTE REPOSITÓRIO
+│  Fonte de verdade dos plugins   │     Criar/corrigir plugins aqui
+│  registry.json · paths.json     │     Depois sincronizar no cms-core
 └─────────────────────────────────┘
 ```
 
-| Repositório | Propósito | Quando usar |
-|-------------|-----------|-------------|
-| **admin-ui-boilerplate** | Componentes React copy-paste (Button, Modal, DataTable, Toast, etc.) | Qualquer ferramenta ou app admin |
-| **cms-core** | Base funcional completa: auth, API CRUD, middleware, admin pages, plugin system, data layer. Já usa admin-ui-boilerplate internamente | Ponto de partida para novo tema de blog |
-| **cms-plugins** | 14 plugins independentes com versionamento próprio + mapeamento por tema | Instalados nos temas via PluginsHub |
-
-**Fluxo para novo tema:** Clonar `cms-core` → customizar design (BaseLayout, páginas públicas, CSS) → instalar plugins via PluginsHub → registrar tema aqui.
+**Regra de ouro:** plugins nascem aqui, vivem no `cms-core`, chegam aos alunos via updater.
 
 ---
 
-## 2. Estrutura deste Repositório
+## 2. Fluxo para Criar um Novo Plugin
+
+> Abra este chat e descreva o plugin que quer criar. O assistente cria os arquivos, sincroniza no cms-core e publica a release automaticamente.
+
+Se quiser fazer manualmente, siga os passos abaixo:
+
+### Passo 1 — Criar os arquivos do plugin aqui
 
 ```
-cms-plugins/
-├── plugins/
-│   └── <name>/
-│       ├── plugin.json          # metadados do plugin
-│       └── *.{astro,tsx,ts}     # código do plugin
-├── templates/
-│   └── <name>/
-│       ├── theme.json           # metadados do tema
-│       └── paths.json           # mapeamento plugin → destinos no tema
-├── public/
-│   └── themes/
-│       └── <name>.png           # screenshot do tema
-├── registry.json                # índice de versões de todos os plugins
-└── src/                         # dashboard Astro (este site)
-    ├── layouts/DashLayout.astro
-    ├── pages/
-    │   ├── index.astro
-    │   ├── plugin/[name].astro
-    │   └── theme/[name].astro
-    └── lib/data.ts
+plugins/<name>/
+├── plugin.json              ← metadados e schema de config
+├── <Component>.astro        ← componente injetado no tema (se tiver slot)
+├── <Settings>.tsx           ← painel de configuração no admin
+├── <admin>.astro            ← página admin (importa o Settings.tsx)
+└── <util>.ts                ← lógica server-side (API calls, etc.)
 ```
 
----
-
-## 3. Anatomia de um Plugin
-
-### `plugin.json`
+### Passo 2 — Registrar no `registry.json`
 
 ```json
 {
-  "name": "google-analytics",
-  "version": "1.0.0",
-  "description": "Google Analytics GA4",
-  "files": ["GoogleAnalytics.astro", "SettingsGA.tsx"],
-  "adminPages": ["analytics.astro"],
-  "configDefaults": {
-    "googleAnalytics": { "measurementId": "" }
-  },
-  "hub": {
-    "label": "Google Analytics",
-    "description": "Rastreie visitas e comportamento dos leitores com GA4.",
-    "icon": "BarChart3",
-    "color": "text-orange-600",
-    "bg": "bg-orange-50",
-    "href": "/admin/analytics"
-  },
-  "changelog": "Versão inicial"
+  "meu-plugin": { "version": "1.0.0", "description": "Descrição curta" }
 }
 ```
 
-| Campo | Tipo | Descrição |
-|-------|------|-----------|
-| `name` | string | Identificador único (slug) |
-| `version` | string | Semver da versão atual |
-| `files` | string[] | Arquivos de componente (copiados para `src/plugins/<name>/`) |
-| `adminPages` | string[] | Páginas admin (copiadas para `src/pages/admin/`) |
-| `configDefaults` | object | Valores padrão da config persistida no tema |
-| `hub.label` | string | Nome exibido no PluginsHub |
-| `hub.icon` | string | Ícone Lucide |
-| `hub.color` / `hub.bg` | string | Classes Tailwind de cor |
-| `hub.href` | string | Rota da página admin do plugin |
-| `changelog` | string | Nota da versão atual |
-
-### Os 5 slots de injeção automática
-
-Os slots permitem que o plugin injete código no layout do tema sem edição manual:
-
-| Slot | Localização no tema |
-|------|---------------------|
-| `head` | Dentro de `<head>` (scripts, meta tags) |
-| `body-end` | Antes de `</body>` (scripts de rastreamento) |
-| `post-bottom` | Rodapé do conteúdo do post |
-| `post-after` | Após o bloco do autor |
-| `post-schema` | Schema markup JSON-LD do post |
-
----
-
-## 4. Mapeamento por Tema (`paths.json`)
-
-O arquivo `templates/<name>/paths.json` define onde cada plugin é instalado no tema:
+### Passo 3 — Mapear no `templates/walker/paths.json`
 
 ```json
 {
-  "google-analytics": {
+  "meu-plugin": {
     "files": [
-      { "src": "GoogleAnalytics.astro", "dest": "src/plugins/google-analytics/GoogleAnalytics.astro" },
-      { "src": "SettingsGA.tsx",        "dest": "src/plugins/google-analytics/SettingsGA.tsx" }
+      { "src": "Component.astro", "dest": "src/plugins/meu-plugin/Component.astro" },
+      { "src": "Settings.tsx",    "dest": "src/plugins/meu-plugin/Settings.tsx" }
     ],
     "adminPages": [
-      { "src": "analytics.astro", "dest": "src/pages/admin/analytics.astro" }
+      { "src": "admin.astro", "dest": "src/pages/admin/meu-plugin.astro" }
     ],
     "slots": [
       {
         "slot": "head",
-        "import": "import GoogleAnalytics from '../google-analytics/GoogleAnalytics.astro';",
-        "component": "<GoogleAnalytics />"
+        "import": "import Component from '../meu-plugin/Component.astro';",
+        "component": "<Component />"
       }
     ]
   }
 }
 ```
 
-- **`files`** — componentes copiados; `src` relativo a `plugins/<name>/`, `dest` relativo à raiz do tema.
-- **`adminPages`** — páginas admin copiadas; mesma lógica.
-- **`slots`** — injeção automática via PluginsHub: `import` é inserido no topo do layout, `component` no slot correspondente.
+### Passo 4 — Commit + push (cms-plugins)
+
+```bash
+git add . && git commit -m "feat(meu-plugin): v1.0.0 — descrição"
+git push
+```
+
+### Passo 5 — Sincronizar no cms-core
+
+```bash
+cp plugins/meu-plugin/* ../cms-core/src/plugins/meu-plugin/
+
+cd ../cms-core
+git add src/plugins/meu-plugin/
+git commit -m "feat(meu-plugin): adiciona plugin v1.0.0"
+git push
+```
+
+> Plugins novos **não precisam de release** — alunos recebem no próximo sync do fork.
 
 ---
 
-## 5. Criando um Novo Tema (passo a passo)
+## 3. Fluxo para Corrigir / Atualizar um Plugin
 
-1. **Clonar o cms-core**
-   ```bash
-   git clone https://github.com/8linksapp-maker/cms-core meu-tema
-   cd meu-tema
-   ```
+### Passo 1 — Editar o plugin aqui
 
-2. **Configurar identidade do tema**
-   Em `src/lib/templateConfig.ts`, atualizar:
-   ```ts
-   export const TEMPLATE_REPO = 'meu-usuario/meu-tema';
-   export const TEMPLATE_NAME = 'meu-tema';
-   ```
+```bash
+# editar plugins/<name>/arquivo.ts
+vim plugins/<name>/plugin.json       # bumpar version
+vim registry.json                    # bumpar version
+```
 
-3. **Criar o design**
-   - `src/layouts/BaseLayout.astro` — layout raiz (slots já preparados)
-   - Páginas públicas: `src/pages/index.astro`, `[slug].astro`, etc.
-   - Componentes visuais em `src/components/layout/`, `sections/`, `sidebar/`, `ui/`
-   - CSS / imagens / fontes em `public/`
-   - `src/data/home.json` — conteúdo da home
+### Passo 2 — Commit + push (cms-plugins)
 
-4. **Instalar plugins**
-   Via PluginsHub admin (rota `/admin/hub`) ou copiando manualmente de `cms-plugins/plugins/<name>/`.
+```bash
+git add . && git commit -m "fix(<name>): descrição do fix"
+git push
+```
 
-5. **Registrar o tema no cms-plugins** (ver seção 6)
+### Passo 3 — Sincronizar e publicar release no cms-core
 
-6. **Deploy no Vercel**
-   Variáveis de ambiente obrigatórias:
-   ```
-   ADMIN_SECRET=<senha-do-admin>
-   GITHUB_TOKEN=<personal-access-token>
-   GITHUB_OWNER=<usuario-ou-org>
-   GITHUB_REPO=<nome-do-repo>
-   ```
+```bash
+cp plugins/<name>/arquivo.ts ../cms-core/src/plugins/<name>/
+
+cd ../cms-core
+
+# Atualizar update-manifest.json (bumpar version + listar arquivos que mudaram)
+vim update-manifest.json
+
+git add . && git commit -m "fix(<name>): descrição"
+git push
+
+# Publicar release — alunos verão no painel /admin/updates
+gh release create vX.Y.Z --title "vX.Y.Z — descrição" --notes "..."
+```
+
+### Passo 4 — Alunos atualizam com 1 clique
+
+```
+/admin/updates → Verificar → Ver e Atualizar → Confirmar
+```
 
 ---
 
-## 6. Registrando um Tema no cms-plugins
+## 4. `update-manifest.json` — Formato
 
-Para que o tema apareça no dashboard e seja instalável:
-
-### 6.1 Criar `templates/<name>/theme.json`
+Arquivo na raiz do `cms-core`. Deve existir em cada release tag.
 
 ```json
 {
-  "name": "meu-tema",
-  "label": "Meu Tema",
-  "description": "Descrição curta do tema.",
-  "version": "1.0.0",
-  "status": "Ativo",
-  "screenshot": "/themes/meu-tema.png"
+  "version": "1.0.3",
+  "note": "Descrição do que mudou nesta versão.",
+  "files": [
+    "src/plugins/<name>/arquivo.ts",
+    "src/plugins/_server.ts",
+    "src/lib/templateConfig.ts"
+  ]
 }
 ```
 
-### 6.2 Criar `templates/<name>/paths.json`
-
-Mapear cada plugin instalado no tema (ver seção 4).
-
-### 6.3 Adicionar screenshot
-
-Colocar `public/themes/<name>.png` (proporção 16:9, mín. 800×450px).
-
-O dashboard detecta automaticamente novos temas pelo diretório `templates/`.
+**Regras:**
+- `version` deve bater com a tag da release (sem o `v`)
+- Listar apenas arquivos que **mudaram** — não precisa listar tudo
+- Nunca incluir `src/data/` ou `src/content/` — são dados do aluno e estão protegidos
 
 ---
 
-## 7. O que muda por tema vs. o que vem do cms-core
+## 5. Anatomia de um Plugin
 
-| Camada | O que é customizado pelo tema | O que vem do cms-core (não tocar) |
-|--------|-------------------------------|-----------------------------------|
-| Layout | `BaseLayout.astro` | — |
-| Páginas públicas | `index.astro`, `[slug].astro`, categoria, tag | — |
-| Componentes visuais | `layout/`, `sections/`, `sidebar/`, `ui/` | `admin/` (componentes React) |
-| Estilo | CSS, fontes, imagens em `public/` | — |
-| Conteúdo | `src/data/home.json` | `src/data/posts/`, `src/data/config.json` |
-| Auth | — | `src/middleware.ts`, `src/lib/auth.ts` |
-| API | — | `src/pages/api/` (CRUD completo) |
-| Admin pages | — | `src/pages/admin/` |
-| Plugin system | — | `src/lib/plugins.ts`, `src/pages/admin/hub.astro` |
-| Schema | — | `src/content/config.ts` |
+### `plugin.json`
+
+```json
+{
+  "name": "meu-plugin",
+  "version": "1.0.0",
+  "description": "Descrição curta",
+  "files": ["Component.astro", "Settings.tsx"],
+  "adminPages": ["admin.astro"],
+  "configDefaults": {
+    "meuPlugin": { "enabled": true, "chave": "" }
+  },
+  "hub": {
+    "label": "Meu Plugin",
+    "description": "Descrição para o hub de plugins.",
+    "icon": "NomeLucide",
+    "color": "text-blue-600",
+    "bg": "bg-blue-50",
+    "href": "/admin/meu-plugin"
+  },
+  "changelog": "Versão inicial"
+}
+```
+
+### Os 5 slots de injeção automática
+
+| Slot | Onde é inserido no tema |
+|------|------------------------|
+| `head` | Dentro de `<head>` |
+| `body-end` | Antes de `</body>` |
+| `post-bottom` | Rodapé do conteúdo do post |
+| `post-after` | Após o bloco do autor |
+| `post-schema` | JSON-LD schema do post |
 
 ---
 
-## 8. Repos Relacionados
+## 6. Estrutura do Repositório
 
-| Repositório | URL | Descrição |
-|-------------|-----|-----------|
-| **admin-ui-boilerplate** | `github.com/8linksapp-maker/admin-ui-boilerplate` | Componentes React copy-paste para UIs admin |
-| **cms-core** | `github.com/8linksapp-maker/cms-core` | Base funcional completa para novos temas |
-| **Walker** (referência) | `github.com/8linksapp-maker/walker` | Primeiro tema construído sobre o cms-core |
+```
+cms-plugins/
+├── plugins/
+│   └── <name>/
+│       ├── plugin.json
+│       └── *.{astro,tsx,ts}
+├── templates/
+│   └── walker/
+│       ├── theme.json
+│       └── paths.json
+├── public/themes/
+│   └── <name>.png           ← screenshot 16:9, mín. 800×450px
+├── registry.json             ← versões de todos os plugins
+├── update-manifest.json      ← template do manifesto (copiar para cms-core)
+└── src/                      ← dashboard Astro deste site
+```
+
+---
+
+## 7. Criando um Novo Tema
+
+1. **Clonar o cms-core** (não este repo)
+   ```bash
+   git clone https://github.com/8linksapp-maker/cms-core meu-tema
+   cd meu-tema && rm -rf .git && git init
+   ```
+
+2. **Configurar identidade** em `src/lib/templateConfig.ts`:
+   ```ts
+   export const TEMPLATE_REPO = 'meu-usuario/meu-tema'; // repo do aluno no GitHub
+   export const TEMPLATE_NAME = 'meu-tema';
+   ```
+
+3. **Customizar o design** — `BaseLayout.astro`, páginas públicas, CSS
+
+4. **Deploy no Vercel** com as variáveis:
+   ```
+   ADMIN_SECRET=<senha>
+   GITHUB_TOKEN=<token com permissão de escrita no repo>
+   GITHUB_OWNER=<usuario>
+   GITHUB_REPO=<nome-do-repo>
+   ```
+
+5. **Registrar o tema aqui** (opcional, para aparecer no dashboard):
+   - Criar `templates/<name>/theme.json`
+   - Criar `templates/<name>/paths.json`
+   - Adicionar `public/themes/<name>.png`
+
+---
+
+## 8. Versão Atual
+
+| Repositório | Versão | Link |
+|-------------|--------|------|
+| cms-plugins | ver `registry.json` | [github.com/8linksapp-maker/cms-plugins](https://github.com/8linksapp-maker/cms-plugins) |
+| cms-core (Walker) | ver `src/data/version.json` | [github.com/8linksapp-maker/cms-core](https://github.com/8linksapp-maker/cms-core) |
+| admin-ui-boilerplate | — | [github.com/8linksapp-maker/admin-ui-boilerplate](https://github.com/8linksapp-maker/admin-ui-boilerplate) |
