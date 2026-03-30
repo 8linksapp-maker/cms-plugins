@@ -132,10 +132,16 @@ async function loadCurrentAuthors(): Promise<any[]> {
 }
 
 async function loadExistingPostSlugs(): Promise<string[]> {
-    // Lê o diretório src/content/blog/ para saber quais slugs já existem
-    // Em dev mode, readFileFromRepo retorna null para diretórios — usamos abordagem simples
-    // Retorna lista vazia se não conseguir ler (o pior caso: duplicatas com sufixo numérico)
-    return [];
+    // Lê o índice de slugs de src/data/post-slugs.json (mantido pelo CMS)
+    // Fallback: retorna lista vazia (pior caso: duplicatas com sufixo numérico)
+    try {
+        const raw = await readFileFromRepo('src/data/post-slugs.json');
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+    } catch {
+        return [];
+    }
 }
 
 // ── Exportação principal ──────────────────────────────────────────────────────
@@ -151,6 +157,24 @@ export async function importWordPressXML(xmlContent: string): Promise<ImportResu
 
     try {
         if (!xmlContent?.trim()) throw new Error('XML vazio ou inválido');
+
+        // Verificar credenciais GitHub em ambiente serverless (produção)
+        const hasGitHubCreds = !!(
+            process.env.GITHUB_TOKEN?.trim() &&
+            process.env.GITHUB_OWNER?.trim() &&
+            process.env.GITHUB_REPO?.trim()
+        );
+        const isServerless = !!(process.env.VERCEL || process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_NAME);
+
+        if (isServerless && !hasGitHubCreds) {
+            result.success = false;
+            result.errors.push(
+                'Configuração necessária: as variáveis de ambiente GITHUB_TOKEN, GITHUB_OWNER e GITHUB_REPO ' +
+                'não estão configuradas. Acesse o painel do Vercel → Settings → Environment Variables e ' +
+                'adicione as três variáveis para habilitar o importador em produção.'
+            );
+            return result;
+        }
 
         const parser = new XMLParser({
             ignoreAttributes: false,
@@ -237,7 +261,8 @@ export async function importWordPressXML(xmlContent: string): Promise<ImportResu
         // ── Processar posts ─────────────────────────────────────────────────
 
         const items = Array.isArray(channel.item) ? channel.item : (channel.item ? [channel.item] : []);
-        const usedSlugs = new Set<string>();
+        const existingSlugs = await loadExistingPostSlugs();
+        const usedSlugs = new Set<string>(existingSlugs);
 
         for (const item of items) {
             try {
