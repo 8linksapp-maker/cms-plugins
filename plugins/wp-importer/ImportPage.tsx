@@ -313,6 +313,19 @@ export default function ImportPage() {
                 commitCount++;
             }
 
+            // Listar posts já existentes no repo (para pular duplicatas)
+            setProgress('Verificando posts existentes no repositório...');
+            triggerToast('Verificando duplicatas...', 'progress', 22);
+            const existingFiles = new Set<string>();
+            try {
+                const tree = await ghFetch(`${api}/git/trees/main?recursive=1`, token);
+                for (const item of (tree.tree || [])) {
+                    if (item.path?.startsWith('src/content/blog/') && item.path.endsWith('.md')) {
+                        existingFiles.add(item.path);
+                    }
+                }
+            } catch {}
+
             setProgress(`Importando ${totalPosts} posts...`);
             triggerToast(`Processando ${totalPosts} posts...`, 'progress', 25);
 
@@ -327,6 +340,14 @@ export default function ImportPage() {
                 try {
                     let slug = post.slug || generateSlug(post.title);
                     if (!slug) { stats.postsSkipped++; continue; }
+
+                    // Pular se já existe no repo
+                    const filePath = `src/content/blog/${slug}.md`;
+                    if (existingFiles.has(filePath)) {
+                        stats.postsSkipped++;
+                        continue;
+                    }
+
                     let base = slug, counter = 1;
                     while (existingSlugs.has(slug)) slug = `${base}-${counter++}`;
                     existingSlugs.add(slug);

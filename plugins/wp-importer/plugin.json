@@ -1,6 +1,6 @@
 {
   "name": "wp-importer",
-  "version": "4.1.0",
+  "version": "4.2.0",
   "description": "Importador de posts do WordPress",
   "files": ["ImportPage.tsx", "wordpress-importer.ts", "wordpress-api.ts"],
   "adminPages": ["import-wp.astro"],
@@ -13,5 +13,5 @@
     "bg": "bg-emerald-50",
     "href": "/admin/import-wp"
   },
-  "changelog": "v4.1.0: Salva progresso a cada 20 posts + proxy de imagens. Se interromper, posts já processados ficam salvos."
+  "changelog": "v4.2.0: Pula posts que já existem no repo. Pode rodar múltiplas vezes sem duplicar."
 }
