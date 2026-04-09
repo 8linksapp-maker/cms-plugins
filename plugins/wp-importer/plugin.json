@@ -1,6 +1,6 @@
 {
   "name": "wp-importer",
-  "version": "4.2.0",
+  "version": "4.3.0",
   "description": "Importador de posts do WordPress",
   "files": ["ImportPage.tsx", "wordpress-importer.ts", "wordpress-api.ts"],
   "adminPages": ["import-wp.astro"],
@@ -13,5 +13,5 @@
     "bg": "bg-emerald-50",
     "href": "/admin/import-wp"
   },
-  "changelog": "v4.2.0: Pula posts que já existem no repo. Pode rodar múltiplas vezes sem duplicar."
+  "changelog": "v4.3.0: Log em tempo real — mostra cada post importado, pulado, imagens e commits conforme acontecem"
 }

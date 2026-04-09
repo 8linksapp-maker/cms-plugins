@@ -198,13 +198,27 @@ function serializePost(post: { title: string; slug: string; description: string;
 
 // ── Component ───────────────────────────────────────────────────────────────
 
+interface LogEntry {
+    time: string;
+    type: 'info' | 'success' | 'skip' | 'error' | 'commit';
+    message: string;
+}
+
 export default function ImportPage() {
     const [file, setFile] = useState<File | null>(null);
     const [importing, setImporting] = useState(false);
     const [progress, setProgress] = useState('');
     const [result, setResult] = useState<ImportResult | null>(null);
     const [error, setError] = useState('');
+    const [logs, setLogs] = useState<LogEntry[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const logRef = useRef<HTMLDivElement>(null);
+
+    const addLog = (type: LogEntry['type'], message: string) => {
+        const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        setLogs(prev => [...prev, { time, type, message }]);
+        setTimeout(() => logRef.current?.scrollTo(0, logRef.current.scrollHeight), 50);
+    };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const f = e.target.files?.[0];
@@ -223,6 +237,7 @@ export default function ImportPage() {
         setImporting(true);
         setError('');
         setResult(null);
+        setLogs([]);
 
         const stats = {
             postsImported: 0, postsSkipped: 0, postErrors: [] as string[], imagesImported: 0,
@@ -230,9 +245,7 @@ export default function ImportPage() {
         };
 
         try {
-            // Step 1: Get GitHub config from server
-            setProgress('Conectando ao servidor...');
-            triggerToast('Iniciando importação...', 'progress', 5);
+            addLog('info', '🔌 Conectando ao servidor...');
             const configRes = await fetch('/api/admin/plugins/import/wordpress', {
                 method: 'POST', credentials: 'same-origin',
                 headers: { 'Content-Type': 'application/json' },
@@ -243,19 +256,19 @@ export default function ImportPage() {
 
             const { token, owner, repo } = config;
             const api = `https://api.github.com/repos/${owner}/${repo}`;
+            addLog('success', `✓ Conectado ao repositório ${owner}/${repo}`);
 
-            // Step 2: Parse XML
+            addLog('info', `📄 Lendo arquivo ${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB)...`);
             setProgress('Lendo arquivo XML...');
-            triggerToast('Lendo XML...', 'progress', 10);
             const xmlText = await file.text();
 
+            addLog('info', '⚙️ Processando XML...');
             setProgress('Processando XML...');
-            triggerToast('Processando...', 'progress', 15);
             const parsed = parseWordPressXML(xmlText);
             const totalPosts = parsed.posts.length;
+            addLog('success', `✓ XML processado: ${totalPosts} posts, ${parsed.categories.length} categorias, ${parsed.authors.length} autores`);
 
-            // Step 3: Process categories & authors
-            setProgress('Processando categorias e autores...');
+            // Categories & authors
             let currentCategories: string[] = config.categories || [];
             let currentAuthors: any[] = config.authors || [];
             const authorLoginToId = new Map<string, string>();
@@ -266,7 +279,6 @@ export default function ImportPage() {
                 currentCategories.push(name);
                 stats.categoriesImported++;
             }
-
             for (const a of parsed.authors) {
                 if (!a.login) continue;
                 const id = generateSlug(a.login);
@@ -276,10 +288,11 @@ export default function ImportPage() {
                 stats.authorsImported++;
             }
 
-            // Step 4: Process posts — create blobs
+            if (stats.categoriesImported > 0) addLog('success', `✓ ${stats.categoriesImported} nova(s) categoria(s): ${currentCategories.slice(-stats.categoriesImported).join(', ')}`);
+            if (stats.authorsImported > 0) addLog('success', `✓ ${stats.authorsImported} novo(s) autor(es) importado(s)`);
+
             const treeItems: { path: string; mode: string; type: string; sha: string }[] = [];
 
-            // Add categories & authors as blobs
             if (stats.categoriesImported > 0) {
                 const sha = await createBlob(api, token, JSON.stringify(currentCategories, null, 2));
                 treeItems.push({ path: 'src/data/categories.json', mode: '100644', type: 'blob', sha });
@@ -289,7 +302,6 @@ export default function ImportPage() {
                 treeItems.push({ path: 'src/data/authors.json', mode: '100644', type: 'blob', sha });
             }
 
-            // Helper: commit batch of tree items
             const COMMIT_EVERY = 20;
             let commitCount = 0;
 
@@ -313,9 +325,9 @@ export default function ImportPage() {
                 commitCount++;
             }
 
-            // Listar posts já existentes no repo (para pular duplicatas)
-            setProgress('Verificando posts existentes no repositório...');
-            triggerToast('Verificando duplicatas...', 'progress', 22);
+            // Check existing posts
+            addLog('info', '🔍 Verificando posts já existentes no repositório...');
+            setProgress('Verificando duplicatas...');
             const existingFiles = new Set<string>();
             try {
                 const tree = await ghFetch(`${api}/git/trees/main?recursive=1`, token);
@@ -325,9 +337,7 @@ export default function ImportPage() {
                     }
                 }
             } catch {}
-
-            setProgress(`Importando ${totalPosts} posts...`);
-            triggerToast(`Processando ${totalPosts} posts...`, 'progress', 25);
+            addLog('info', `📂 ${existingFiles.size} post(s) já existem no repositório`);
 
             let postsInBatch = 0;
 
@@ -335,15 +345,15 @@ export default function ImportPage() {
                 const post = parsed.posts[i];
                 const pct = Math.round(25 + (i / totalPosts) * 65);
                 setProgress(`Post ${i + 1}/${totalPosts}: "${post.title.substring(0, 45)}..."`);
-                if (i % 3 === 0) triggerToast(`Post ${i + 1}/${totalPosts}`, 'progress', pct);
+                if (i % 5 === 0) triggerToast(`Post ${i + 1}/${totalPosts}`, 'progress', pct);
 
                 try {
                     let slug = post.slug || generateSlug(post.title);
                     if (!slug) { stats.postsSkipped++; continue; }
 
-                    // Pular se já existe no repo
                     const filePath = `src/content/blog/${slug}.md`;
                     if (existingFiles.has(filePath)) {
+                        addLog('skip', `⏭️ "${post.title}" — já existe (/blog/${slug})`);
                         stats.postsSkipped++;
                         continue;
                     }
@@ -362,6 +372,7 @@ export default function ImportPage() {
 
                     // Thumbnail
                     let heroImage = '';
+                    let imgCount = 0;
                     if (post.thumbnailUrl) {
                         try {
                             const dl = await downloadImageViaProxy(post.thumbnailUrl);
@@ -371,6 +382,7 @@ export default function ImportPage() {
                                 treeItems.push({ path: `public/uploads/${fn}`, mode: '100644', type: 'blob', sha });
                                 heroImage = `/uploads/${fn}`;
                                 stats.imagesImported++;
+                                imgCount++;
                             }
                         } catch {}
                     }
@@ -387,6 +399,7 @@ export default function ImportPage() {
                                 treeItems.push({ path: `public/uploads/${fn}`, mode: '100644', type: 'blob', sha });
                                 content = content.split(imgUrl).join(`/uploads/${fn}`);
                                 stats.imagesImported++;
+                                imgCount++;
                             }
                         } catch {}
                     }
@@ -405,25 +418,30 @@ export default function ImportPage() {
                     treeItems.push({ path: `src/content/blog/${slug}.md`, mode: '100644', type: 'blob', sha });
                     stats.postsImported++;
                     postsInBatch++;
+
+                    const imgInfo = imgCount > 0 ? ` + ${imgCount} img` : '';
+                    addLog('success', `✓ ${i + 1}/${totalPosts} — "${post.title}" → /blog/${slug}${imgInfo}`);
                 } catch (err: any) {
+                    addLog('error', `✗ "${post.title}": ${err.message}`);
                     stats.postErrors.push(`"${post.title}": ${err.message}`);
                     stats.postsSkipped++;
                 }
 
-                // Commit a cada 20 posts (salva progresso)
+                // Commit a cada 20 posts
                 if (postsInBatch >= COMMIT_EVERY) {
-                    setProgress(`Salvando lote (${stats.postsImported} posts até agora)...`);
-                    triggerToast(`Salvando lote ${commitCount + 1}...`, 'progress', pct);
+                    addLog('commit', `💾 Salvando lote ${commitCount + 1} (${postsInBatch} posts)...`);
+                    setProgress(`Salvando lote ${commitCount + 1}...`);
                     await commitTreeItems(treeItems, `CMS: Import WP — lote ${commitCount + 1} (${postsInBatch} posts)`);
+                    addLog('commit', `✓ Lote ${commitCount} salvo no repositório!`);
                     treeItems.length = 0;
                     postsInBatch = 0;
                 }
             }
 
-            // Commit final com posts restantes
+            // Commit final
             if (treeItems.length > 0) {
-                setProgress(`Salvando lote final (${postsInBatch} posts)...`);
-                triggerToast('Salvando lote final...', 'progress', 92);
+                addLog('commit', `💾 Salvando lote final (${postsInBatch} posts)...`);
+                setProgress('Salvando lote final...');
 
                 const refData = await ghFetch(`${api}/git/ref/heads/main`, token);
                 const baseCommitSha = refData.object.sha;
@@ -433,7 +451,6 @@ export default function ImportPage() {
                     method: 'POST',
                     body: JSON.stringify({ base_tree: commitData.tree.sha, tree: treeItems }),
                 });
-
                 const newCommit = await ghFetch(`${api}/git/commits`, token, {
                     method: 'POST',
                     body: JSON.stringify({
@@ -442,14 +459,14 @@ export default function ImportPage() {
                         parents: [baseCommitSha],
                     }),
                 });
-
                 await ghFetch(`${api}/git/refs/heads/main`, token, {
                     method: 'PATCH',
                     body: JSON.stringify({ sha: newCommit.sha }),
                 });
+                addLog('commit', `✓ Lote final salvo!`);
             }
 
-            // Save categories/authors via server (if changed)
+            // Save categories/authors
             if (stats.categoriesImported > 0 || stats.authorsImported > 0) {
                 await fetch('/api/admin/plugins/import/wordpress', {
                     method: 'POST', credentials: 'same-origin',
@@ -462,6 +479,8 @@ export default function ImportPage() {
                 });
             }
 
+            addLog('success', `🎉 Importação concluída! ${stats.postsImported} posts importados, ${stats.imagesImported} imagens, ${commitCount + (treeItems.length > 0 ? 1 : 0)} commit(s)`);
+
             const finalResult: ImportResult = {
                 success: true,
                 posts: { imported: stats.postsImported, skipped: stats.postsSkipped, errors: stats.postErrors, imagesImported: stats.imagesImported },
@@ -471,9 +490,10 @@ export default function ImportPage() {
             };
 
             setResult(finalResult);
-            triggerToast(`Concluído! ${stats.postsImported} posts em 1 commit. 1 deploy.`, 'success');
+            triggerToast(`Concluído! ${stats.postsImported} posts importados.`, 'success');
 
         } catch (err: any) {
+            addLog('error', `❌ Erro fatal: ${err.message}`);
             setError(err.message || 'Erro ao importar');
             triggerToast(`Erro: ${err.message}`, 'error');
         } finally {
@@ -547,9 +567,33 @@ export default function ImportPage() {
                 {importing ? <><Loader2 className="w-4 h-4 animate-spin" /> Importando...</> : <><Upload className="w-4 h-4" /> Importar do WordPress</>}
             </button>
 
-            {importing && (
-                <div className="bg-violet-50 border border-violet-200 rounded-xl p-4">
-                    <p className="text-sm text-violet-700 font-medium">{progress || 'Processando...'}</p>
+            {/* Log em tempo real */}
+            {(importing || logs.length > 0) && (
+                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div className="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Log de Importação</p>
+                        {importing && <span className="text-xs text-violet-600 font-medium animate-pulse">{progress}</span>}
+                    </div>
+                    <div ref={logRef} className="max-h-72 overflow-y-auto p-3 space-y-1 font-mono text-xs">
+                        {logs.map((log, i) => (
+                            <div key={i} className={`flex gap-2 px-2 py-1 rounded ${
+                                log.type === 'success' ? 'bg-emerald-50 text-emerald-700' :
+                                log.type === 'skip' ? 'bg-slate-50 text-slate-400' :
+                                log.type === 'error' ? 'bg-red-50 text-red-600' :
+                                log.type === 'commit' ? 'bg-violet-50 text-violet-700 font-semibold' :
+                                'text-slate-600'
+                            }`}>
+                                <span className="text-slate-300 shrink-0">{log.time}</span>
+                                <span>{log.message}</span>
+                            </div>
+                        ))}
+                        {importing && (
+                            <div className="flex gap-2 px-2 py-1 text-violet-500 animate-pulse">
+                                <Loader2 className="w-3 h-3 animate-spin mt-0.5" />
+                                <span>Processando...</span>
+                            </div>
+                        )}
+                    </div>
                 </div>
             )}
         </div>
