@@ -1,6 +1,6 @@
 {
   "name": "wp-importer",
-  "version": "4.0.1",
+  "version": "4.1.0",
   "description": "Importador de posts do WordPress",
   "files": ["ImportPage.tsx", "wordpress-importer.ts", "wordpress-api.ts"],
   "adminPages": ["import-wp.astro"],
@@ -13,5 +13,5 @@
     "bg": "bg-emerald-50",
     "href": "/admin/import-wp"
   },
-  "changelog": "v4.0.1: Proxy de imagens no servidor — resolve CORS e acelera download"
+  "changelog": "v4.1.0: Salva progresso a cada 20 posts + proxy de imagens. Se interromper, posts já processados ficam salvos."
 }

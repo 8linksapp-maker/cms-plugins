@@ -289,12 +289,38 @@ export default function ImportPage() {
                 treeItems.push({ path: 'src/data/authors.json', mode: '100644', type: 'blob', sha });
             }
 
+            // Helper: commit batch of tree items
+            const COMMIT_EVERY = 20;
+            let commitCount = 0;
+
+            async function commitTreeItems(items: typeof treeItems, message: string) {
+                if (items.length === 0) return;
+                const refData = await ghFetch(`${api}/git/ref/heads/main`, token);
+                const baseCommitSha = refData.object.sha;
+                const commitData = await ghFetch(`${api}/git/commits/${baseCommitSha}`, token);
+                const newTree = await ghFetch(`${api}/git/trees`, token, {
+                    method: 'POST',
+                    body: JSON.stringify({ base_tree: commitData.tree.sha, tree: items }),
+                });
+                const newCommit = await ghFetch(`${api}/git/commits`, token, {
+                    method: 'POST',
+                    body: JSON.stringify({ message, tree: newTree.sha, parents: [baseCommitSha] }),
+                });
+                await ghFetch(`${api}/git/refs/heads/main`, token, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ sha: newCommit.sha }),
+                });
+                commitCount++;
+            }
+
             setProgress(`Importando ${totalPosts} posts...`);
             triggerToast(`Processando ${totalPosts} posts...`, 'progress', 25);
 
+            let postsInBatch = 0;
+
             for (let i = 0; i < totalPosts; i++) {
                 const post = parsed.posts[i];
-                const pct = Math.round(25 + (i / totalPosts) * 60);
+                const pct = Math.round(25 + (i / totalPosts) * 65);
                 setProgress(`Post ${i + 1}/${totalPosts}: "${post.title.substring(0, 45)}..."`);
                 if (i % 3 === 0) triggerToast(`Post ${i + 1}/${totalPosts}`, 'progress', pct);
 
@@ -328,7 +354,7 @@ export default function ImportPage() {
                         } catch {}
                     }
 
-                    // Content images (limit to first 5 to avoid too many requests)
+                    // Content images (limit to first 5)
                     let content = post.content;
                     const imgUrls = post.imageUrls.slice(0, 5);
                     for (const imgUrl of imgUrls) {
@@ -344,12 +370,10 @@ export default function ImportPage() {
                         } catch {}
                     }
 
-                    // Description
                     let description = '';
                     if (post.excerpt) description = htmlToText(post.excerpt).substring(0, 160);
                     if (!description && content) description = htmlToText(content).substring(0, 160);
 
-                    // Serialize MD
                     const md = serializePost({
                         title: post.title, slug, description, content, heroImage,
                         category: post.category || '', author: authorId,
@@ -359,16 +383,26 @@ export default function ImportPage() {
                     const sha = await createBlob(api, token, md);
                     treeItems.push({ path: `src/content/blog/${slug}.md`, mode: '100644', type: 'blob', sha });
                     stats.postsImported++;
+                    postsInBatch++;
                 } catch (err: any) {
                     stats.postErrors.push(`"${post.title}": ${err.message}`);
                     stats.postsSkipped++;
                 }
+
+                // Commit a cada 20 posts (salva progresso)
+                if (postsInBatch >= COMMIT_EVERY) {
+                    setProgress(`Salvando lote (${stats.postsImported} posts até agora)...`);
+                    triggerToast(`Salvando lote ${commitCount + 1}...`, 'progress', pct);
+                    await commitTreeItems(treeItems, `CMS: Import WP — lote ${commitCount + 1} (${postsInBatch} posts)`);
+                    treeItems.length = 0;
+                    postsInBatch = 0;
+                }
             }
 
-            // Step 5: Create tree + commit
+            // Commit final com posts restantes
             if (treeItems.length > 0) {
-                setProgress(`Criando commit com ${treeItems.length} arquivos...`);
-                triggerToast('Finalizando — 1 commit...', 'progress', 90);
+                setProgress(`Salvando lote final (${postsInBatch} posts)...`);
+                triggerToast('Salvando lote final...', 'progress', 92);
 
                 const refData = await ghFetch(`${api}/git/ref/heads/main`, token);
                 const baseCommitSha = refData.object.sha;
