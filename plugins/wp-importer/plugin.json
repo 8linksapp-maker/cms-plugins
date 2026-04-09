@@ -1,6 +1,6 @@
 {
   "name": "wp-importer",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Importador de posts do WordPress",
   "files": ["ImportPage.tsx", "wordpress-importer.ts", "wordpress-api.ts"],
   "adminPages": ["import-wp.astro"],
@@ -13,5 +13,5 @@
     "bg": "bg-emerald-50",
     "href": "/admin/import-wp"
   },
-  "changelog": "v3.0.0: Importação post a post + 1 commit final. Sem limite de tamanho, sem erro 413, 1 deploy."
+  "changelog": "v3.0.1: Limpa caracteres de controle inválidos do XML antes de parsear (corrige 'XML inválido' em exports grandes)"
 }

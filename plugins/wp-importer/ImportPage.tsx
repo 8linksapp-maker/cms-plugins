@@ -77,8 +77,12 @@ function generateSlug(str: string): string {
 }
 
 function parseWordPressXML(xmlText: string): ParsedData {
+    // Remove caracteres de controle inválidos em XML (comuns em exports WordPress)
+    // Mantém tab (0x09), newline (0x0A), carriage return (0x0D)
+    const cleanXml = xmlText.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
+
     const parser = new DOMParser();
-    const doc = parser.parseFromString(xmlText, 'text/xml');
+    const doc = parser.parseFromString(cleanXml, 'text/xml');
 
     const errors = doc.getElementsByTagName('parsererror');
     if (errors.length > 0) throw new Error('XML inválido. Verifique se o arquivo foi exportado corretamente do WordPress.');
