@@ -1,17 +1,17 @@
 {
   "name": "updater",
-  "version": "1.1.0",
-  "description": "Painel de atualizações do template e plugins",
-  "files": ["UpdatesPanel.tsx", "PluginUpdatesPanel.tsx", "plugin-updates.ts"],
-  "adminPages": ["updates.astro", "plugin-updates.astro"],
+  "version": "2.0.0",
+  "description": "Sistema unificado de atualizações (core + plugins)",
+  "files": ["SystemUpdater.tsx", "system-updates.ts", "UpdatesPanel.tsx", "PluginUpdatesPanel.tsx", "plugin-updates.ts"],
+  "adminPages": ["system-updates.astro", "updates.astro", "plugin-updates.astro"],
   "configDefaults": {},
   "hub": {
     "label": "Atualizações",
-    "description": "Verifique e instale atualizações do template e plugins.",
+    "description": "Atualize template e plugins com um clique.",
     "icon": "RefreshCw",
     "color": "text-sky-600",
     "bg": "bg-sky-50",
-    "href": "/admin/updates"
+    "href": "/admin/system-updates"
   },
-  "changelog": "v1.1.0: Plugin updates agora funciona em produção (lê pluginVersions via GitHub API); inclui API e painel de plugins no updater para atualização remota"
+  "changelog": "v2.0.0: Sistema unificado — core + plugins em um só painel com 'Atualizar Tudo'. Auto-healing: o updater se atualiza primeiro."
 }

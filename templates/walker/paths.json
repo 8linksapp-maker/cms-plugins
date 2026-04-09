@@ -185,11 +185,14 @@
   },
   "updater": {
     "files": [
+      { "src": "SystemUpdater.tsx",       "dest": "src/plugins/updater/SystemUpdater.tsx" },
+      { "src": "system-updates.ts",       "dest": "src/pages/api/admin/system-updates.ts" },
       { "src": "UpdatesPanel.tsx",        "dest": "src/plugins/updater/UpdatesPanel.tsx" },
       { "src": "PluginUpdatesPanel.tsx",  "dest": "src/plugins/updater/PluginUpdatesPanel.tsx" },
       { "src": "plugin-updates.ts",       "dest": "src/pages/api/admin/plugin-updates.ts" }
     ],
     "adminPages": [
+      { "src": "system-updates.astro",   "dest": "src/pages/admin/system-updates.astro" },
       { "src": "updates.astro",          "dest": "src/pages/admin/updates.astro" },
       { "src": "plugin-updates.astro",   "dest": "src/pages/admin/plugin-updates.astro" }
     ],
