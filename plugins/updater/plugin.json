@@ -1,17 +1,17 @@
 {
   "name": "updater",
-  "version": "1.0.0",
-  "description": "Painel de atualizações do template",
-  "files": ["UpdatesPanel.tsx"],
-  "adminPages": ["updates.astro"],
+  "version": "1.1.0",
+  "description": "Painel de atualizações do template e plugins",
+  "files": ["UpdatesPanel.tsx", "PluginUpdatesPanel.tsx", "plugin-updates.ts"],
+  "adminPages": ["updates.astro", "plugin-updates.astro"],
   "configDefaults": {},
   "hub": {
     "label": "Atualizações",
-    "description": "Verifique e instale atualizações do template Walker.",
+    "description": "Verifique e instale atualizações do template e plugins.",
     "icon": "RefreshCw",
     "color": "text-sky-600",
     "bg": "bg-sky-50",
     "href": "/admin/updates"
   },
-  "changelog": "Versão inicial"
+  "changelog": "v1.1.0: Plugin updates agora funciona em produção (lê pluginVersions via GitHub API); inclui API e painel de plugins no updater para atualização remota"
 }

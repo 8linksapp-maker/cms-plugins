@@ -185,10 +185,13 @@
   },
   "updater": {
     "files": [
-      { "src": "UpdatesPanel.tsx", "dest": "src/plugins/updater/UpdatesPanel.tsx" }
+      { "src": "UpdatesPanel.tsx",        "dest": "src/plugins/updater/UpdatesPanel.tsx" },
+      { "src": "PluginUpdatesPanel.tsx",  "dest": "src/plugins/updater/PluginUpdatesPanel.tsx" },
+      { "src": "plugin-updates.ts",       "dest": "src/pages/api/admin/plugin-updates.ts" }
     ],
     "adminPages": [
-      { "src": "updates.astro", "dest": "src/pages/admin/updates.astro" }
+      { "src": "updates.astro",          "dest": "src/pages/admin/updates.astro" },
+      { "src": "plugin-updates.astro",   "dest": "src/pages/admin/plugin-updates.astro" }
     ],
     "slots": []
   }

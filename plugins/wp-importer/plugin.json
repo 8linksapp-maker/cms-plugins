@@ -1,6 +1,6 @@
 {
   "name": "wp-importer",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Importador de posts do WordPress",
   "files": ["ImportPage.tsx", "wordpress-importer.ts"],
   "adminPages": ["import-wp.astro"],
@@ -13,5 +13,5 @@
     "bg": "bg-emerald-50",
     "href": "/admin/import-wp"
   },
-  "changelog": "v1.0.1: Corrige erro em produção sem credenciais GitHub (mensagem clara); evita duplicatas em imports repetidos"
+  "changelog": "v1.0.2: Corrige erro 'cross-site is not valid JSON' ao importar (credentials + parse seguro da resposta)"
 }
