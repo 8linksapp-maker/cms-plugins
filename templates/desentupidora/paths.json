@@ -176,7 +176,8 @@
   "wp-importer": {
     "files": [
       { "src": "ImportPage.tsx",        "dest": "src/plugins/wp-importer/ImportPage.tsx" },
-      { "src": "wordpress-importer.ts", "dest": "src/plugins/wp-importer/wordpress-importer.ts" }
+      { "src": "wordpress-importer.ts", "dest": "src/plugins/wp-importer/wordpress-importer.ts" },
+      { "src": "wordpress-api.ts",       "dest": "src/pages/api/admin/plugins/import/wordpress.ts" }
     ],
     "adminPages": [
       { "src": "import-wp.astro", "dest": "src/pages/admin/import-wp.astro" }

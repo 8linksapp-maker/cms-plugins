@@ -1,8 +1,8 @@
 {
   "name": "wp-importer",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Importador de posts do WordPress",
-  "files": ["ImportPage.tsx", "wordpress-importer.ts"],
+  "files": ["ImportPage.tsx", "wordpress-importer.ts", "wordpress-api.ts"],
   "adminPages": ["import-wp.astro"],
   "configDefaults": {},
   "hub": {
@@ -13,5 +13,5 @@
     "bg": "bg-emerald-50",
     "href": "/admin/import-wp"
   },
-  "changelog": "v1.0.2: Corrige erro 'cross-site is not valid JSON' ao importar (credentials + parse seguro da resposta)"
+  "changelog": "v2.0.0: XML parseado no browser — sem limite de tamanho de arquivo. Suporta exports grandes do WordPress."
 }
