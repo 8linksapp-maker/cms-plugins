@@ -1,6 +1,6 @@
 {
   "name": "updater",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Sistema unificado de atualizações (core + plugins)",
   "files": ["SystemUpdater.tsx", "system-updates.ts", "UpdatesPanel.tsx", "PluginUpdatesPanel.tsx", "plugin-updates.ts"],
   "adminPages": ["system-updates.astro", "updates.astro", "plugin-updates.astro"],
@@ -13,5 +13,5 @@
     "bg": "bg-sky-50",
     "href": "/admin/system-updates"
   },
-  "changelog": "v2.0.0: Sistema unificado — core + plugins em um só painel com 'Atualizar Tudo'. Auto-healing: o updater se atualiza primeiro."
+  "changelog": "v2.0.1: Remove menu duplicado; AdminNav atualizado remotamente; painel único em /admin/system-updates"
 }
