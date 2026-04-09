@@ -187,6 +187,8 @@
   "updater": {
     "files": [
       { "src": "SystemUpdater.tsx",       "dest": "src/plugins/updater/SystemUpdater.tsx" },
+      { "src": "DeployStatus.tsx",        "dest": "src/plugins/updater/DeployStatus.tsx" },
+      { "src": "deploy-status.ts",        "dest": "src/pages/api/admin/deploy-status.ts" },
       { "src": "system-updates.ts",       "dest": "src/pages/api/admin/system-updates.ts" },
       { "src": "AdminNav.tsx",            "dest": "src/components/admin/AdminNav.tsx" },
       { "src": "UpdatesPanel.tsx",        "dest": "src/plugins/updater/UpdatesPanel.tsx" },
