@@ -1,6 +1,6 @@
 {
   "name": "wp-importer",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Importador de posts do WordPress",
   "files": ["ImportPage.tsx", "wordpress-importer.ts", "wordpress-api.ts"],
   "adminPages": ["import-wp.astro"],
@@ -13,5 +13,5 @@
     "bg": "bg-emerald-50",
     "href": "/admin/import-wp"
   },
-  "changelog": "v2.0.0: XML parseado no browser — sem limite de tamanho de arquivo. Suporta exports grandes do WordPress."
+  "changelog": "v3.0.0: Importação post a post + 1 commit final. Sem limite de tamanho, sem erro 413, 1 deploy."
 }

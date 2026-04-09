@@ -154,8 +154,11 @@ function parseWordPressXML(xmlText: string): ParsedData {
             }
         }
 
+        // Remove data: URIs (base64 images) do conteúdo para reduzir payload
+        const cleanContent = content.replace(/src=["']data:image\/[^"']+["']/gi, 'src=""');
+
         posts.push({
-            title, slug, content, excerpt, status, creator, postDate,
+            title, slug, content: cleanContent, excerpt, status, creator, postDate,
             category, thumbnailUrl, imageUrls: extractImageUrls(content),
         });
     }
@@ -185,20 +188,20 @@ export default function ImportPage() {
         setResult(null);
     };
 
-    const BATCH_SIZE = 10;
+    const API = '/api/admin/plugins/import/wordpress';
 
-    const sendBatch = async (data: ParsedData): Promise<ImportResult> => {
-        const res = await fetch('/api/admin/plugins/import/wordpress', {
+    const send = async (body: any): Promise<any> => {
+        const res = await fetch(API, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'same-origin',
-            body: JSON.stringify(data),
+            body: JSON.stringify(body),
         });
         const text = await res.text();
         try {
-            const parsed = JSON.parse(text);
-            if (!res.ok) throw new Error(parsed.error || `Erro ${res.status}`);
-            return parsed;
+            const data = JSON.parse(text);
+            if (!res.ok) throw new Error(data.error || `Erro ${res.status}`);
+            return data;
         } catch {
             throw new Error(
                 res.status === 401
@@ -221,59 +224,45 @@ export default function ImportPage() {
             const xmlText = await file.text();
 
             setProgress('Processando posts, categorias e autores...');
-            triggerToast('Processando XML...', 'progress', 30);
+            triggerToast('Processando XML...', 'progress', 20);
             const parsed = parseWordPressXML(xmlText);
 
             const totalPosts = parsed.posts.length;
-            setProgress(`Encontrados ${totalPosts} posts, ${parsed.categories.length} categorias, ${parsed.authors.length} autores.`);
+            setProgress(`Encontrados ${totalPosts} posts. Iniciando importação...`);
 
-            // Step 2: Send in batches (categories + authors in first batch, posts split in chunks)
-            const totalResult: ImportResult = {
-                success: true,
-                posts: { imported: 0, skipped: 0, errors: [], imagesImported: 0 },
-                authors: { imported: 0, skipped: 0 },
-                categories: { imported: 0, skipped: 0 },
-                errors: [],
-            };
+            // Step 2: INIT — envia categorias e autores
+            triggerToast('Importando categorias e autores...', 'progress', 25);
+            const initResult = await send({
+                action: 'init',
+                categories: parsed.categories,
+                authors: parsed.authors,
+            });
 
-            const batches: ParsedData[] = [];
-            for (let i = 0; i < totalPosts; i += BATCH_SIZE) {
-                batches.push({
-                    posts: parsed.posts.slice(i, i + BATCH_SIZE),
-                    // Only send authors + categories in the first batch
-                    authors: i === 0 ? parsed.authors : [],
-                    categories: i === 0 ? parsed.categories : [],
-                });
-            }
-            // Edge case: no posts but has categories/authors
-            if (batches.length === 0) {
-                batches.push({ posts: [], authors: parsed.authors, categories: parsed.categories });
-            }
+            // Step 3: POST — envia cada post individualmente
+            let imported = 0, skipped = 0, postErrors: string[] = [];
+            for (let i = 0; i < totalPosts; i++) {
+                const pct = Math.round(30 + (i / totalPosts) * 60);
+                setProgress(`Importando post ${i + 1} de ${totalPosts}: "${parsed.posts[i].title.substring(0, 40)}..."`);
+                if (i % 5 === 0) triggerToast(`Post ${i + 1}/${totalPosts}`, 'progress', pct);
 
-            for (let b = 0; b < batches.length; b++) {
-                const pct = Math.round(40 + (b / batches.length) * 55);
-                const from = b * BATCH_SIZE + 1;
-                const to = Math.min((b + 1) * BATCH_SIZE, totalPosts);
-                setProgress(`Importando posts ${from}-${to} de ${totalPosts}...`);
-                triggerToast(`Lote ${b + 1}/${batches.length} (posts ${from}-${to})`, 'progress', pct);
-
-                const batchResult = await sendBatch(batches[b]);
-
-                totalResult.posts.imported += batchResult.posts.imported;
-                totalResult.posts.skipped += batchResult.posts.skipped;
-                totalResult.posts.imagesImported += batchResult.posts.imagesImported;
-                totalResult.posts.errors.push(...batchResult.posts.errors);
-                totalResult.authors.imported += batchResult.authors.imported;
-                totalResult.authors.skipped += batchResult.authors.skipped;
-                totalResult.categories.imported += batchResult.categories.imported;
-                totalResult.categories.skipped += batchResult.categories.skipped;
-                totalResult.errors.push(...batchResult.errors);
-                if (!batchResult.success) totalResult.success = false;
+                try {
+                    const res = await send({ action: 'post', post: parsed.posts[i] });
+                    if (res.imported) imported++;
+                    else skipped++;
+                } catch (err: any) {
+                    postErrors.push(`"${parsed.posts[i].title}": ${err.message}`);
+                    skipped++;
+                }
             }
 
-            setResult(totalResult);
-            if (totalResult.success) {
-                triggerToast(`Importação concluída! ${totalResult.posts.imported} posts importados.`, 'success');
+            // Step 4: FINALIZE — 1 commit com todos os arquivos
+            setProgress('Salvando todos os arquivos no repositório... (1 commit)');
+            triggerToast('Finalizando importação...', 'progress', 92);
+            const finalResult: ImportResult = await send({ action: 'finalize' });
+
+            setResult(finalResult);
+            if (finalResult.success) {
+                triggerToast(`Importação concluída! ${finalResult.posts.imported} posts em 1 commit.`, 'success');
             } else {
                 triggerToast('Importação concluída com erros. Verifique os detalhes.', 'info');
             }
