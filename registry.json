@@ -11,6 +11,6 @@
   "affiliates":       { "version": "1.0.1", "description": "Gerenciador de produtos afiliados" },
   "ai-generator":     { "version": "1.0.0", "description": "Gerador de posts com IA (OpenAI/Anthropic)" },
   "search-console":   { "version": "1.0.0", "description": "Google Search Console" },
-  "wp-importer":      { "version": "4.0.0", "description": "Importador de posts do WordPress" },
+  "wp-importer":      { "version": "4.0.1", "description": "Importador de posts do WordPress" },
   "updater":          { "version": "2.0.1", "description": "Painel de atualizações do template" }
 }

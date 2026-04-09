@@ -1,6 +1,6 @@
 {
   "name": "wp-importer",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "Importador de posts do WordPress",
   "files": ["ImportPage.tsx", "wordpress-importer.ts", "wordpress-api.ts"],
   "adminPages": ["import-wp.astro"],
@@ -13,5 +13,5 @@
     "bg": "bg-emerald-50",
     "href": "/admin/import-wp"
   },
-  "changelog": "v4.0.0: Importação 100% no browser — sem limites, sem timeout, 1 commit, 1 deploy. Suporta 200+ posts."
+  "changelog": "v4.0.1: Proxy de imagens no servidor — resolve CORS e acelera download"
 }

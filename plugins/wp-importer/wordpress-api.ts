@@ -78,7 +78,29 @@ export const POST: APIRoute = async ({ request }) => {
             return ok({ saved: true });
         }
 
-        return new Response(JSON.stringify({ error: 'Ação inválida. Use: get-config, save-meta' }), {
+        // ── PROXY-IMAGE: baixa imagem no servidor (sem CORS) ────────
+        if (action === 'proxy-image') {
+            const url = body.url as string;
+            if (!url || url.startsWith('data:')) {
+                return ok({ error: 'URL inválida' });
+            }
+            try {
+                const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
+                if (!res.ok) return ok({ error: `HTTP ${res.status}` });
+                const ct = res.headers.get('content-type') || '';
+                if (!ct.startsWith('image/')) return ok({ error: 'Não é imagem' });
+                const extMap: Record<string, string> = { jpeg: 'jpg', jpg: 'jpg', png: 'png', gif: 'gif', webp: 'webp' };
+                const rawExt = ct.split('/')[1]?.split(';')[0]?.trim() || 'jpg';
+                const ext = extMap[rawExt] || 'jpg';
+                const buf = await res.arrayBuffer();
+                const base64 = Buffer.from(buf).toString('base64');
+                return ok({ base64, ext });
+            } catch (e: any) {
+                return ok({ error: e.message || 'Timeout' });
+            }
+        }
+
+        return new Response(JSON.stringify({ error: 'Ação inválida. Use: get-config, save-meta, proxy-image' }), {
             status: 400, headers: { 'Content-Type': 'application/json' },
         });
 

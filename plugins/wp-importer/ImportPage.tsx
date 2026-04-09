@@ -174,21 +174,19 @@ async function createBlob(api: string, token: string, content: string, encoding:
     return data.sha;
 }
 
-async function downloadImageAsBase64(url: string): Promise<{ base64: string; ext: string } | null> {
+/** Baixa imagem via proxy no servidor (evita CORS) */
+async function downloadImageViaProxy(url: string): Promise<{ base64: string; ext: string } | null> {
     try {
         if (!url || url.startsWith('data:') || url.startsWith('/')) return null;
-        const res = await fetch(url);
-        if (!res.ok) return null;
-        const ct = res.headers.get('content-type') || '';
-        if (!ct.startsWith('image/')) return null;
-        const extMap: Record<string, string> = { jpeg: 'jpg', jpg: 'jpg', png: 'png', gif: 'gif', webp: 'webp' };
-        const rawExt = ct.split('/')[1]?.split(';')[0]?.trim() || 'jpg';
-        const ext = extMap[rawExt] || 'jpg';
-        const buf = await res.arrayBuffer();
-        const bytes = new Uint8Array(buf);
-        let binary = '';
-        for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-        return { base64: btoa(binary), ext };
+        const res = await fetch('/api/admin/plugins/import/wordpress', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'proxy-image', url }),
+        });
+        const data = await res.json();
+        if (data.error || !data.base64) return null;
+        return { base64: data.base64, ext: data.ext };
     } catch { return null; }
 }
 
@@ -319,7 +317,7 @@ export default function ImportPage() {
                     let heroImage = '';
                     if (post.thumbnailUrl) {
                         try {
-                            const dl = await downloadImageAsBase64(post.thumbnailUrl);
+                            const dl = await downloadImageViaProxy(post.thumbnailUrl);
                             if (dl) {
                                 const fn = `${Date.now()}-${slug}-thumb.${dl.ext}`;
                                 const sha = await createBlob(api, token, dl.base64, 'base64');
@@ -335,7 +333,7 @@ export default function ImportPage() {
                     const imgUrls = post.imageUrls.slice(0, 5);
                     for (const imgUrl of imgUrls) {
                         try {
-                            const dl = await downloadImageAsBase64(imgUrl);
+                            const dl = await downloadImageViaProxy(imgUrl);
                             if (dl) {
                                 const fn = `${Date.now()}-${slug}-${Math.random().toString(36).slice(2, 5)}.${dl.ext}`;
                                 const sha = await createBlob(api, token, dl.base64, 'base64');
