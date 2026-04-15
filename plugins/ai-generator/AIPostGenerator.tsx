@@ -5,8 +5,8 @@
  * Adaptado do CNX para o estilo visual do Walker (white/slate/violet).
  */
 
-import { useState, useEffect } from 'react';
-import { Sparkles, Loader2, AlertCircle, ArrowLeft, Plus, Trash2, ChevronUp, ChevronDown } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Sparkles, Loader2, AlertCircle, ArrowLeft, Plus, Trash2, ChevronUp, ChevronDown, GripVertical } from 'lucide-react';
 import { triggerToast } from '../../components/admin/CmsToaster';
 
 interface Author {
@@ -88,6 +88,36 @@ export default function AIPostGenerator({ authors, categories }: Props) {
         const t = dir === 'up' ? i - 1 : i + 1;
         [next[i], next[t]] = [next[t], next[i]];
         setOutlines(next);
+    };
+
+    // Drag and drop
+    const dragIdx = useRef<number | null>(null);
+    const dragOverIdx = useRef<number | null>(null);
+
+    const handleDragStart = (i: number) => { dragIdx.current = i; };
+    const handleDragOver = (e: React.DragEvent, i: number) => { e.preventDefault(); dragOverIdx.current = i; };
+    const handleDropOutline = () => {
+        if (dragIdx.current === null || dragOverIdx.current === null || dragIdx.current === dragOverIdx.current) return;
+        const next = [...outlines];
+        const [moved] = next.splice(dragIdx.current, 1);
+        next.splice(dragOverIdx.current, 0, moved);
+        setOutlines(next);
+        dragIdx.current = null;
+        dragOverIdx.current = null;
+    };
+
+    const dragCommIdx = useRef<number | null>(null);
+    const dragCommOverIdx = useRef<number | null>(null);
+    const handleCommDragStart = (i: number) => { dragCommIdx.current = i; };
+    const handleCommDragOver = (e: React.DragEvent, i: number) => { e.preventDefault(); dragCommOverIdx.current = i; };
+    const handleDropCommercial = () => {
+        if (dragCommIdx.current === null || dragCommOverIdx.current === null || dragCommIdx.current === dragCommOverIdx.current) return;
+        const next = [...commercialItems];
+        const [moved] = next.splice(dragCommIdx.current, 1);
+        next.splice(dragCommOverIdx.current, 0, moved);
+        setCommercialItems(next);
+        dragCommIdx.current = null;
+        dragCommOverIdx.current = null;
     };
 
     // Commercial items management
@@ -306,7 +336,15 @@ export default function AIPostGenerator({ authors, categories }: Props) {
                     {outlines.length > 0 ? (
                         <div className="space-y-2">
                             {outlines.map((o, i) => (
-                                <div key={i} className="flex items-center gap-2 p-3 bg-slate-50 rounded-xl border border-slate-200">
+                                <div
+                                    key={i}
+                                    draggable
+                                    onDragStart={() => handleDragStart(i)}
+                                    onDragOver={(e) => handleDragOver(e, i)}
+                                    onDrop={handleDropOutline}
+                                    className="flex items-center gap-2 p-3 bg-slate-50 rounded-xl border border-slate-200 cursor-grab active:cursor-grabbing hover:border-violet-300 transition-colors"
+                                >
+                                    <GripVertical className="w-4 h-4 text-slate-300 shrink-0" />
                                     <span className={`px-2 py-1 rounded text-xs font-bold shrink-0 ${levelColors[o.level]}`}>{o.level.toUpperCase()}</span>
                                     <input type="text" value={o.text} onChange={e => updateOutline(i, { text: e.target.value })} className="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-violet-500" placeholder={`Título do ${o.level.toUpperCase()}...`} />
                                     <input type="number" min={50} max={2000} value={o.minWords ?? ''} onChange={e => { const v = parseInt(e.target.value); updateOutline(i, { minWords: isNaN(v) ? undefined : Math.max(50, Math.min(2000, v)) }); }} className="w-20 bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-center focus:outline-none focus:border-violet-500" placeholder="100-150" title="Palavras alvo" />
@@ -349,8 +387,16 @@ export default function AIPostGenerator({ authors, categories }: Props) {
                     {commercialItems.length > 0 ? (
                         <div className="space-y-2">
                             {commercialItems.map((item, i) => (
-                                <div key={i} className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                                <div
+                                    key={i}
+                                    draggable
+                                    onDragStart={() => handleCommDragStart(i)}
+                                    onDragOver={(e) => handleCommDragOver(e, i)}
+                                    onDrop={handleDropCommercial}
+                                    className="p-3 bg-slate-50 rounded-xl border border-slate-200 cursor-grab active:cursor-grabbing hover:border-violet-300 transition-colors"
+                                >
                                     <div className="flex items-center gap-2">
+                                        <GripVertical className="w-4 h-4 text-slate-300 shrink-0" />
                                         {item.type === 'outline' ? (
                                             <>
                                                 <select value={item.level} onChange={e => updateCommercialItem(i, { level: e.target.value })} className="w-16 bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:border-violet-500 shrink-0">

@@ -1,6 +1,6 @@
 {
   "name": "ai-generator",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Gerador de posts com IA (OpenAI/Anthropic)",
   "files": ["AIPostGenerator.tsx", "SettingsAI.tsx", "ai-provider.ts", "generate.ts", "pexels.ts"],
   "adminPages": ["ai.astro"],
@@ -15,5 +15,5 @@
     "bg": "bg-pink-50",
     "href": "/admin/ai"
   },
-  "changelog": "Versão inicial"
+  "changelog": "v1.1.0: Drag and drop para reordenar tópicos e itens comerciais"
 }
