@@ -1,8 +1,8 @@
 {
   "name": "updater",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Sistema unificado de atualizações (core + plugins)",
-  "files": ["SystemUpdater.tsx", "system-updates.ts", "logout.ts", "UpdatesPanel.tsx", "PluginUpdatesPanel.tsx", "plugin-updates.ts"],
+  "files": ["SystemUpdater.tsx", "system-updates.ts", "logout.ts", "github.ts", "UpdatesPanel.tsx", "PluginUpdatesPanel.tsx", "plugin-updates.ts"],
   "adminPages": ["system-updates.astro", "updates.astro", "plugin-updates.astro"],
   "configDefaults": {},
   "hub": {
@@ -13,5 +13,5 @@
     "bg": "bg-sky-50",
     "href": "/admin/system-updates"
   },
-  "changelog": "v2.1.0: Corrige bug do botão Sair (race condition cookie + redirect). Agora logout é atômico via GET redirect."
+  "changelog": "v2.2.0: github.ts com cache de leituras (previne rate limit). Inclui logout fix e todas as atualizações anteriores."
 }

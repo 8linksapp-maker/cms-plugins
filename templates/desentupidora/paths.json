@@ -192,6 +192,7 @@
       { "src": "deploy-status.ts",        "dest": "src/pages/api/admin/deploy-status.ts" },
       { "src": "system-updates.ts",       "dest": "src/pages/api/admin/system-updates.ts" },
       { "src": "logout.ts",               "dest": "src/pages/api/admin/logout.ts" },
+      { "src": "github.ts",               "dest": "src/pages/api/admin/github.ts" },
       { "src": "AdminNav.tsx",            "dest": "src/components/admin/AdminNav.tsx" },
       { "src": "UpdatesPanel.tsx",        "dest": "src/plugins/updater/UpdatesPanel.tsx" },
       { "src": "PluginUpdatesPanel.tsx",  "dest": "src/plugins/updater/PluginUpdatesPanel.tsx" },
