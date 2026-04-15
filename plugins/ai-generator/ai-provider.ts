@@ -88,7 +88,7 @@ export async function callOpenAI(
 }
 
 /**
- * Chama a API Google Gemini (gemini-1.5-flash).
+ * Chama a API Google Gemini (gemini-2.0-flash).
  */
 export async function callGemini(
     prompt: string,
@@ -98,7 +98,7 @@ export async function callGemini(
     const systemPrompt = options?.systemPrompt ?? 'Você é um redator profissional especializado em criar conteúdo de alta qualidade para blogs.';
     const maxTokens = options?.maxTokens ?? 4096;
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
     const res = await fetch(url, {
         method: 'POST',
