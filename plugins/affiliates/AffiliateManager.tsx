@@ -702,30 +702,35 @@ export default function AffiliateManager() {
                     {extraLinks.length === 0 ? (
                       <p className="text-xs text-slate-400">Mercado Livre, Magalu, Shopee...</p>
                     ) : (
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         {extraLinks.map((link, i) => (
-                          <div key={i} className="flex gap-2 items-center">
-                            <input
-                              type="text"
-                              value={link.label}
-                              onChange={e => setExtraLinks(ls => ls.map((l, j) => j === i ? { ...l, label: e.target.value } : l))}
-                              className={`${inputClass} w-28 shrink-0`}
-                              placeholder="Magalu"
-                            />
-                            <input
-                              type="url"
-                              value={link.url}
-                              onChange={e => setExtraLinks(ls => ls.map((l, j) => j === i ? { ...l, url: e.target.value } : l))}
-                              className={`${inputClass} font-mono text-xs flex-1`}
-                              placeholder="https://..."
-                            />
-                            <button
-                              type="button"
-                              onClick={() => setExtraLinks(ls => ls.filter((_, j) => j !== i))}
-                              className="p-2 text-slate-300 hover:text-red-500 rounded-lg transition-colors shrink-0"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
+                          <div key={i} className="bg-white border border-slate-200 rounded-lg p-3">
+                            <div className="flex items-center gap-2 mb-2">
+                              <label className="text-xs font-bold text-slate-500 flex-1">Loja {i + 1}</label>
+                              <button
+                                type="button"
+                                onClick={() => setExtraLinks(ls => ls.filter((_, j) => j !== i))}
+                                className="p-1 text-slate-300 hover:text-red-500 rounded transition-colors"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                            <div className="space-y-2">
+                              <input
+                                type="text"
+                                value={link.label}
+                                onChange={e => setExtraLinks(ls => ls.map((l, j) => j === i ? { ...l, label: e.target.value } : l))}
+                                className={inputClass}
+                                placeholder="Nome da loja (ex: Mercado Livre)"
+                              />
+                              <input
+                                type="url"
+                                value={link.url}
+                                onChange={e => setExtraLinks(ls => ls.map((l, j) => j === i ? { ...l, url: e.target.value } : l))}
+                                className={`${inputClass} font-mono text-xs`}
+                                placeholder="https://link-do-produto..."
+                              />
+                            </div>
                           </div>
                         ))}
                       </div>
