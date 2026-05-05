@@ -391,7 +391,12 @@ export default function AffiliateManager() {
 
   const handleFormSave = () => {
     if (!form.title.trim()) { triggerToast('Preencha o título do produto', 'error'); return; }
-    if (!form.amazonUrl.trim()) { triggerToast('Preencha a URL da Amazon', 'error'); return; }
+    const hasMainUrl = form.amazonUrl.trim().length > 0;
+    const hasExtraUrl = extraLinks.some(l => l.url.trim().length > 0);
+    if (!hasMainUrl && !hasExtraUrl) {
+      triggerToast('Adicione pelo menos um link (Amazon ou outra loja)', 'error');
+      return;
+    }
 
     const finalSlug = form.slug.trim() || slugify(form.title);
     const finalPros = prosText.split('\n').map(s => s.trim()).filter(Boolean);
@@ -453,10 +458,10 @@ export default function AffiliateManager() {
               <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/30">
                 <ShoppingCart className="w-4 h-4" />
               </div>
-              <h2 className="font-black text-xl tracking-tight">Afiliados Amazon</h2>
+              <h2 className="font-black text-xl tracking-tight">Afiliados</h2>
             </div>
             <p className="text-amber-100 text-sm font-medium ml-12">
-              Insira produtos com prós, contras e CTA em qualquer post via shortcode
+              Amazon, Mercado Livre, Magalu, Shopee — produtos com prós, contras e CTA via shortcode
             </p>
           </div>
           <div
@@ -677,13 +682,15 @@ export default function AffiliateManager() {
                   </div>
 
                   <div>
-                    <label className={labelClass}>URL Amazon *</label>
+                    <label className={labelClass}>
+                      URL principal <span className="text-slate-400 font-normal normal-case tracking-normal">— Amazon ou outra loja (opcional se houver lojas adicionais abaixo)</span>
+                    </label>
                     <input
                       type="url"
                       value={form.amazonUrl}
                       onChange={e => setForm(f => ({ ...f, amazonUrl: e.target.value }))}
                       className={`${inputClass} font-mono text-xs`}
-                      placeholder="https://www.amazon.com.br/dp/..."
+                      placeholder="https://www.amazon.com.br/dp/... ou https://www.mercadolivre.com.br/..."
                     />
                   </div>
 

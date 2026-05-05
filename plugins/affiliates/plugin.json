@@ -1,7 +1,7 @@
 {
   "name": "affiliates",
-  "version": "1.0.1",
-  "description": "Gerenciador de produtos afiliados",
+  "version": "1.1.0",
+  "description": "Gerenciador de produtos afiliados (Amazon, Mercado Livre, Magalu, Shopee, etc)",
   "files": ["AffiliateManager.tsx", "AffiliateProducts.astro", "amazon-product.ts"],
   "adminPages": ["affiliates.astro"],
   "configDefaults": {
@@ -28,5 +28,5 @@
     "bg": "bg-rose-50",
     "href": "/admin/affiliates"
   },
-  "changelog": "v1.0.1: Redesign do admin com prévia ao vivo, integração com Amazon PA-API 5.0 para importar produtos pelo ASIN, e configuração de credenciais diretamente no painel."
+  "changelog": "v1.1.0: URL principal agora é opcional — se você cadastrar produto só com Mercado Livre, Magalu ou Shopee, o primeiro link extra vira o botão CTA. Tag de afiliado Amazon (?tag=) só é aplicada em URLs amazon.* — links de outras lojas mantêm seu formato original. v1.0.1: Redesign do admin com prévia ao vivo, integração com Amazon PA-API 5.0 para importar produtos pelo ASIN."
 }
